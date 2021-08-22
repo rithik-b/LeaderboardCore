@@ -10,11 +10,13 @@ namespace LeaderboardCore.UI.ViewControllers
 {
     [HotReload(RelativePathToLayout = @"..\Views\LeaderboardNavigationButtons.bsml")]
     [ViewDefinition("LeaderboardCore.UI.Views.LeaderboardNavigationButtons.bsml")]
-    internal class LeaderboardNavigationButtonsController : BSMLAutomaticViewController, IInitializable, IDisposable, INotifyLeaderboardActivate, INotifyLeaderboardLoad
+    internal class LeaderboardNavigationButtonsController : BSMLAutomaticViewController, IInitializable, IDisposable, IPreviewBeatmapLevelUpdater, INotifyLeaderboardActivate, INotifyLeaderboardLoad
     {
         private PlatformLeaderboardViewController platformLeaderboardViewController;
         private FloatingScreen floatingScreen;
+
         private bool leaderboardLoaded = false;
+        private IPreviewBeatmapLevel selectedLevel;
         private int currentIndex = 0;
 
         private Transform containerTransform;
@@ -48,6 +50,12 @@ namespace LeaderboardCore.UI.ViewControllers
             GameObject.Destroy(floatingScreen.gameObject);
         }
 
+        public void PreviewBeatmapLevelUpdated(IPreviewBeatmapLevel beatmapLevel)
+        {
+            selectedLevel = beatmapLevel;
+            OnLeaderboardLoaded(leaderboardLoaded);
+        }
+
         public void OnLeaderboardActivated()
         {
             if (containerTransform == null)
@@ -76,7 +84,7 @@ namespace LeaderboardCore.UI.ViewControllers
         {
             leaderboardLoaded = loaded;
 
-            if (loaded)
+            if (loaded && selectedLevel != null && selectedLevel is CustomPreviewBeatmapLevel)
             {
                 floatingScreen.SetRootViewController(this, AnimationType.In);
             }

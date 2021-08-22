@@ -96,9 +96,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Installers\" />
-	  <Folder Include="Interfaces\" />
-	  <Folder Include="Managers\" />
 	  <Folder Include="UI\ViewControllers\" />
 	  <Folder Include="UI\Views\" />
 	</ItemGroup>

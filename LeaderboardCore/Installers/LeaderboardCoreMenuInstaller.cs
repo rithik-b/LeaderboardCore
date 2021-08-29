@@ -11,6 +11,7 @@ namespace LeaderboardCore.Installers
         {
             Container.BindInterfacesAndSelfTo<LeaderboardNavigationButtonsController>().FromNewComponentAsViewController().AsSingle();
             Container.BindInterfacesTo<LeaderboardCoreManager>().AsSingle();
+            Container.BindInterfacesAndSelfTo<CustomLeaderboardManager>().AsSingle();
         }
     }
 }

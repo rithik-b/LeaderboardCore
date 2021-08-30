@@ -12,9 +12,13 @@ namespace LeaderboardCore.Models
         public void Show(FloatingScreen panelScreen, Vector3 leaderboardPosition, PlatformLeaderboardViewController platformLeaderboardViewController)
         {
             panelScreen.SetRootViewController(panelViewController, ViewController.AnimationType.None);
-            leaderboardViewController.transform.SetParent(platformLeaderboardViewController.transform);
             leaderboardViewController.transform.localPosition = leaderboardPosition;
-            leaderboardViewController.transform.localScale = Vector3.one;
+            
+            if (leaderboardViewController.screen == null)
+            {
+                leaderboardViewController.__Init(platformLeaderboardViewController.screen, platformLeaderboardViewController, null);
+            }
+
             leaderboardViewController.__Activate(false, false);
         }
 

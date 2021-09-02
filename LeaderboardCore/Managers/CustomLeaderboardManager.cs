@@ -31,7 +31,7 @@ namespace LeaderboardCore.Managers
         {
             foreach (var notifyCustomLeaderboardsChange in notifyCustomLeaderboardsChanges)
             {
-                notifyCustomLeaderboardsChange.OnLeaderboardsChanged(customLeaderboards);
+                notifyCustomLeaderboardsChange.OnLeaderboardsChanged(new List<CustomLeaderboard>(customLeaderboards));
             }
         }
     }

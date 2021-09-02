@@ -177,13 +177,13 @@ namespace LeaderboardCore.UI.ViewControllers
 
         public void OnLeaderboardsChanged(List<CustomLeaderboard> customLeaderboards)
         {
-            this.customLeaderboards = customLeaderboards;
             if (currentIndex != 0)
             {
-                customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
+                this.customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
                 currentIndex = 0;
                 UnYeetSS();
             }
+            this.customLeaderboards = customLeaderboards;
             NotifyPropertyChanged(nameof(LeftButtonActive));
             NotifyPropertyChanged(nameof(RightButtonActive));
         }

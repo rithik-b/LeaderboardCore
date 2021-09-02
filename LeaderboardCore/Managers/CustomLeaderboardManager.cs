@@ -6,7 +6,6 @@ namespace LeaderboardCore.Managers
 {
     public class CustomLeaderboardManager
     {
-        public static CustomLeaderboardManager instance;
         private readonly List<INotifyCustomLeaderboardsChange> notifyCustomLeaderboardsChanges;
         internal readonly List<CustomLeaderboard> customLeaderboards;
 

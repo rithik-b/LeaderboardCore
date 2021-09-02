@@ -2,7 +2,6 @@
 using BeatSaberMarkupLanguage.FloatingScreen;
 using BeatSaberMarkupLanguage.ViewControllers;
 using LeaderboardCore.Interfaces;
-using LeaderboardCore.Managers;
 using LeaderboardCore.Models;
 using System;
 using System.Collections.Generic;
@@ -21,6 +20,7 @@ namespace LeaderboardCore.UI.ViewControllers
 
         private bool leaderboardLoaded = false;
         private IPreviewBeatmapLevel selectedLevel;
+        private List<CustomLeaderboard> customLeaderboards;
         private int currentIndex = 0;
 
         private Transform containerTransform;
@@ -109,7 +109,7 @@ namespace LeaderboardCore.UI.ViewControllers
 
                 if (currentIndex != 0)
                 {
-                    CustomLeaderboardManager.instance?.customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
+                    customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
                     currentIndex = 0;
                     UnYeetSS();
                     NotifyPropertyChanged(nameof(LeftButtonActive));
@@ -141,7 +141,7 @@ namespace LeaderboardCore.UI.ViewControllers
         [UIAction("left-button-click")]
         private void LeftButtonClick()
         {
-            CustomLeaderboardManager.instance?.customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
+            customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
             currentIndex--;
 
             if (currentIndex == 0)
@@ -150,7 +150,7 @@ namespace LeaderboardCore.UI.ViewControllers
             }
             else
             {
-                CustomLeaderboardManager.instance?.customLeaderboards[currentIndex - 1].Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
+                customLeaderboards[currentIndex - 1].Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
             }
 
             NotifyPropertyChanged(nameof(LeftButtonActive));
@@ -166,11 +166,11 @@ namespace LeaderboardCore.UI.ViewControllers
             }
             else
             {
-                CustomLeaderboardManager.instance?.customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
+                customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
             }
 
             currentIndex++;
-            CustomLeaderboardManager.instance?.customLeaderboards[currentIndex - 1].Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
+            customLeaderboards[currentIndex - 1].Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
 
             NotifyPropertyChanged(nameof(LeftButtonActive));
             NotifyPropertyChanged(nameof(RightButtonActive));
@@ -178,16 +178,13 @@ namespace LeaderboardCore.UI.ViewControllers
 
         public void OnLeaderboardsChanged(List<CustomLeaderboard> customLeaderboards)
         {
-            if (currentIndex >= customLeaderboards.Count)
+            this.customLeaderboards = customLeaderboards;
+            if (currentIndex != 0)
             {
-                if (currentIndex != 0)
-                {
-                    CustomLeaderboardManager.instance?.customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
-                    currentIndex = 0;
-                    UnYeetSS();
-                }
+                customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
+                currentIndex = 0;
+                UnYeetSS();
             }
-
             NotifyPropertyChanged(nameof(LeftButtonActive));
             NotifyPropertyChanged(nameof(RightButtonActive));
         }
@@ -196,6 +193,6 @@ namespace LeaderboardCore.UI.ViewControllers
         private bool LeftButtonActive => currentIndex > 0;
 
         [UIValue("right-button-active")]
-        private bool RightButtonActive => currentIndex < CustomLeaderboardManager.instance?.customLeaderboards.Count;
+        private bool RightButtonActive => currentIndex < customLeaderboards?.Count;
     }
 }

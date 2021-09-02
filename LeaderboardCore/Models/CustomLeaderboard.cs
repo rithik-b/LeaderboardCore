@@ -11,22 +11,32 @@ namespace LeaderboardCore.Models
 
         public void Show(FloatingScreen panelScreen, Vector3 leaderboardPosition, PlatformLeaderboardViewController platformLeaderboardViewController)
         {
-            panelScreen.SetRootViewController(panelViewController, ViewController.AnimationType.None);
-            leaderboardViewController.transform.localPosition = leaderboardPosition;
-            
-            if (leaderboardViewController.screen == null)
+            if (panelViewController != null)
             {
-                leaderboardViewController.__Init(platformLeaderboardViewController.screen, platformLeaderboardViewController, null);
+                panelScreen.SetRootViewController(panelViewController, ViewController.AnimationType.None);
             }
 
-            leaderboardViewController.__Activate(false, false);
-            leaderboardViewController.transform.SetParent(platformLeaderboardViewController.transform);
+            if (leaderboardViewController != null)
+            {
+                leaderboardViewController.transform.localPosition = leaderboardPosition;
+
+                if (leaderboardViewController.screen == null)
+                {
+                    leaderboardViewController.__Init(platformLeaderboardViewController.screen, platformLeaderboardViewController, null);
+                }
+
+                leaderboardViewController.__Activate(false, false);
+                leaderboardViewController.transform.SetParent(platformLeaderboardViewController.transform);
+            }
         }
 
         public void Hide(FloatingScreen panelScreen)
         {
             panelScreen.SetRootViewController(null, ViewController.AnimationType.None);
-            leaderboardViewController.__Deactivate(false, true, false);
+            if (leaderboardViewController != null)
+            {
+                leaderboardViewController.__Deactivate(false, true, false);
+            }
         }
     }
 }

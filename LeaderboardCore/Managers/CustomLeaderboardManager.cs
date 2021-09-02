@@ -17,8 +17,11 @@ namespace LeaderboardCore.Managers
 
         public void Register(CustomLeaderboard customLeaderboard)
         {
-            customLeaderboards.Add(customLeaderboard);
-            OnLeaderboardsChanged();
+            if (!customLeaderboards.Contains(customLeaderboard))
+            {
+                customLeaderboards.Add(customLeaderboard);
+                OnLeaderboardsChanged();
+            }
         }
 
         public void Unregister(CustomLeaderboard customLeaderboard)

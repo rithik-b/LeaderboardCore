@@ -20,6 +20,7 @@ namespace LeaderboardCore.Models
             }
 
             leaderboardViewController.__Activate(false, false);
+            leaderboardViewController.transform.SetParent(platformLeaderboardViewController.transform);
         }
 
         public void Hide(FloatingScreen panelScreen)

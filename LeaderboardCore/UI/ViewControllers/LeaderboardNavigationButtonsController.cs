@@ -101,12 +101,10 @@ namespace LeaderboardCore.UI.ViewControllers
 
             if (loaded && selectedLevel != null && selectedLevel is CustomPreviewBeatmapLevel)
             {
-                buttonsFloatingScreen.SetRootViewController(this, AnimationType.In);
+                buttonsFloatingScreen.SetRootViewController(this, AnimationType.None);
             }
             else
             {
-                buttonsFloatingScreen.SetRootViewController(null, AnimationType.None);
-
                 if (currentIndex != 0)
                 {
                     customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
@@ -115,6 +113,7 @@ namespace LeaderboardCore.UI.ViewControllers
                     NotifyPropertyChanged(nameof(LeftButtonActive));
                     NotifyPropertyChanged(nameof(RightButtonActive));
                 }
+                buttonsFloatingScreen.SetRootViewController(null, AnimationType.None);
             }
         }
 

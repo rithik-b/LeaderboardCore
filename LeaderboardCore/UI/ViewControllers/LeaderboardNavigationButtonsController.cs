@@ -65,10 +65,18 @@ namespace LeaderboardCore.UI.ViewControllers
             }
         }
 
+        public void OnEnable()
+        {
+            OnLeaderboardLoaded(leaderboardLoaded);
+        }
+
         public void PreviewBeatmapLevelUpdated(IPreviewBeatmapLevel beatmapLevel)
         {
             selectedLevel = beatmapLevel;
-            OnLeaderboardLoaded(leaderboardLoaded);
+            if (isActiveAndEnabled || beatmapLevel is CustomPreviewBeatmapLevel)
+            {
+                OnLeaderboardLoaded(leaderboardLoaded);
+            }
         }
 
         public void OnLeaderboardActivated()
@@ -92,6 +100,7 @@ namespace LeaderboardCore.UI.ViewControllers
                 ssPanelScreenPosition = ssPanelScreenTransform.localPosition;
             }
 
+            buttonsFloatingScreen.SetRootViewController(this, AnimationType.None);
             OnLeaderboardLoaded(true);
         }
 
@@ -99,22 +108,18 @@ namespace LeaderboardCore.UI.ViewControllers
         {
             leaderboardLoaded = loaded;
 
-            if (loaded && selectedLevel != null && selectedLevel is CustomPreviewBeatmapLevel)
-            {
-                buttonsFloatingScreen.SetRootViewController(this, AnimationType.None);
-            }
-            else
+            if (!loaded || selectedLevel == null || !(selectedLevel is CustomPreviewBeatmapLevel))
             {
                 if (currentIndex != 0)
                 {
                     customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
                     currentIndex = 0;
                     UnYeetSS();
-                    NotifyPropertyChanged(nameof(LeftButtonActive));
-                    NotifyPropertyChanged(nameof(RightButtonActive));
                 }
-                buttonsFloatingScreen.SetRootViewController(null, AnimationType.None);
             }
+
+            NotifyPropertyChanged(nameof(LeftButtonActive));
+            NotifyPropertyChanged(nameof(RightButtonActive));
         }
 
         private void YeetSS()
@@ -189,9 +194,9 @@ namespace LeaderboardCore.UI.ViewControllers
         }
 
         [UIValue("left-button-active")]
-        private bool LeftButtonActive => currentIndex > 0;
+        private bool LeftButtonActive => currentIndex > 0 && (leaderboardLoaded && selectedLevel != null && selectedLevel is CustomPreviewBeatmapLevel);
 
         [UIValue("right-button-active")]
-        private bool RightButtonActive => currentIndex < customLeaderboards?.Count;
+        private bool RightButtonActive => currentIndex < customLeaderboards?.Count && (leaderboardLoaded && selectedLevel != null && selectedLevel is CustomPreviewBeatmapLevel);
     }
 }

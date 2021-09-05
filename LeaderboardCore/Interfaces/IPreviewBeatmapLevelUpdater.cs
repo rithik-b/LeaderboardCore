@@ -1,6 +1,6 @@
 ﻿namespace LeaderboardCore.Interfaces
 {
-    interface IPreviewBeatmapLevelUpdater
+    internal interface IPreviewBeatmapLevelUpdater
     {
         public void PreviewBeatmapLevelUpdated(IPreviewBeatmapLevel beatmapLevel);
     }

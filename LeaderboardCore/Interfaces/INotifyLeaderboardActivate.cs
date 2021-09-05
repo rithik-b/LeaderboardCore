@@ -1,6 +1,6 @@
 ﻿namespace LeaderboardCore.Interfaces
 {
-    public interface INotifyLeaderboardActivate
+    internal interface INotifyLeaderboardActivate
     {
         public void OnLeaderboardActivated();
     }

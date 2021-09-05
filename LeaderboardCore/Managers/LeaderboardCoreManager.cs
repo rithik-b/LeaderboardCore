@@ -12,14 +12,16 @@ namespace LeaderboardCore.Managers
         private readonly List<IPreviewBeatmapLevelUpdater> previewBeatmapLevelUpdaters;
         private readonly List<INotifyLeaderboardActivate> notifyLeaderboardActivates;
         private readonly List<INotifyLeaderboardLoad> notifyLeaderboardLoads;
+        private readonly List<INotifyScoreUpload> notifyScoreUploads;
 
         public LeaderboardCoreManager(LevelCollectionViewController levelCollectionViewController, List<IPreviewBeatmapLevelUpdater> previewBeatmapLevelUpdaters,
-            List<INotifyLeaderboardActivate> notifyLeaderboardActivates, List<INotifyLeaderboardLoad> notifyLeaderboardLoads)
+            List<INotifyLeaderboardActivate> notifyLeaderboardActivates, List<INotifyLeaderboardLoad> notifyLeaderboardLoads, List<INotifyScoreUpload> notifyScoreUploads)
         {
             this.levelCollectionViewController = levelCollectionViewController;
             this.previewBeatmapLevelUpdaters = previewBeatmapLevelUpdaters;
             this.notifyLeaderboardActivates = notifyLeaderboardActivates;
             this.notifyLeaderboardLoads = notifyLeaderboardLoads;
+            this.notifyScoreUploads = notifyScoreUploads;
         }
 
         public void Initialize()
@@ -27,6 +29,7 @@ namespace LeaderboardCore.Managers
             levelCollectionViewController.didSelectLevelEvent += LevelCollectionViewController_didSelectLevelEvent;
             PanelView_Show.ViewActivated += PlatformLeaderboardViewController_didActivateEvent;
             PanelView_SetIsLoaded.IsLoadedChanged += PanelView_SetIsLoaded_IsLoadedChanged;
+            PanelView_SetPrompt.ScoreUploaded += PanelView_SetPrompt_ScoreUploaded;
         }
 
         public void Dispose()
@@ -34,6 +37,7 @@ namespace LeaderboardCore.Managers
             levelCollectionViewController.didSelectLevelEvent -= LevelCollectionViewController_didSelectLevelEvent;
             PanelView_Show.ViewActivated -= PlatformLeaderboardViewController_didActivateEvent;
             PanelView_SetIsLoaded.IsLoadedChanged -= PanelView_SetIsLoaded_IsLoadedChanged;
+            PanelView_SetPrompt.ScoreUploaded -= PanelView_SetPrompt_ScoreUploaded;
         }
 
 
@@ -58,6 +62,14 @@ namespace LeaderboardCore.Managers
             foreach (var notifyLeaderboardLoad in notifyLeaderboardLoads)
             {
                 notifyLeaderboardLoad.OnLeaderboardLoaded(loaded);
+            }
+        }
+
+        private void PanelView_SetPrompt_ScoreUploaded()
+        {
+            foreach (var notifyScoreUpload in notifyScoreUploads)
+            {
+                notifyScoreUpload.OnScoreUploaded();
             }
         }
     }

@@ -1,6 +1,6 @@
 ﻿namespace LeaderboardCore.Interfaces
 {
-    interface INotifyLeaderboardLoad
+    public interface INotifyLeaderboardLoad
     {
         public void OnLeaderboardLoaded(bool loaded);
     }

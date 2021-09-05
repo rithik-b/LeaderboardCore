@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LeaderboardCore.Interfaces
 {
-    interface INotifyCustomLeaderboardsChange
+    internal interface INotifyCustomLeaderboardsChange
     {
         public void OnLeaderboardsChanged(List<CustomLeaderboard> customLeaderboards);
 

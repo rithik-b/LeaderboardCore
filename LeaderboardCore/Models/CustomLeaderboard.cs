@@ -40,13 +40,16 @@ namespace LeaderboardCore.Models
 
         public void Hide(FloatingScreen panelScreen)
         {
-            if (panelScreen.isActiveAndEnabled)
+            if (panelScreen != null)
             {
-                panelScreen.SetRootViewController(null, ViewController.AnimationType.None);
-            }
-            else
-            {
-                panelViewController.gameObject.SetActive(false);
+                if (panelScreen.isActiveAndEnabled)
+                {
+                    panelScreen.SetRootViewController(null, ViewController.AnimationType.None);
+                }
+                else
+                {
+                    panelViewController.gameObject.SetActive(false);
+                }
             }
 
             if (leaderboardViewController != null)

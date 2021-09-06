@@ -14,6 +14,14 @@ namespace LeaderboardCore.Models
             if (panelViewController != null)
             {
                 panelScreen.SetRootViewController(panelViewController, ViewController.AnimationType.None);
+                if (!panelViewController.isActiveAndEnabled)
+                {
+                    panelViewController.gameObject.SetActive(true);
+                }
+            }
+            else
+            {
+                panelScreen.SetRootViewController(null, ViewController.AnimationType.None);
             }
 
             if (leaderboardViewController != null)
@@ -32,7 +40,15 @@ namespace LeaderboardCore.Models
 
         public void Hide(FloatingScreen panelScreen)
         {
-            panelScreen.SetRootViewController(null, ViewController.AnimationType.None);
+            if (panelScreen.isActiveAndEnabled)
+            {
+                panelScreen.SetRootViewController(null, ViewController.AnimationType.None);
+            }
+            else
+            {
+                panelViewController.gameObject.SetActive(false);
+            }
+
             if (leaderboardViewController != null)
             {
                 leaderboardViewController.__Deactivate(false, true, false);

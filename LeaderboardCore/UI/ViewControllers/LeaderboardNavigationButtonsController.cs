@@ -40,7 +40,7 @@ namespace LeaderboardCore.UI.ViewControllers
 
         public void Initialize()
         {
-            buttonsFloatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(115f, 25f), false, Vector3.zero, Quaternion.identity);
+            buttonsFloatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(120f, 25f), false, Vector3.zero, Quaternion.identity);
             buttonsFloatingScreen.transform.SetParent(platformLeaderboardViewController.transform);
             buttonsFloatingScreen.transform.localPosition = new Vector3(3f, 50f);
             buttonsFloatingScreen.transform.localScale = Vector3.one;

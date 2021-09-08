@@ -4,12 +4,22 @@ using UnityEngine;
 
 namespace LeaderboardCore.Models
 {
+    /// <summary>
+    /// Abstract class for the Custom Leaderboard. Must provide the panel and leaderboard views.
+    /// </summary>
     public abstract class CustomLeaderboard
     {
+        /// <summary>
+        /// The ViewController for the leaderboard's panel.
+        /// </summary>
         protected abstract ViewController panelViewController { get; }
+
+        /// <summary>
+        /// The ViewController for the leaderboard itself.
+        /// </summary>
         protected abstract ViewController leaderboardViewController { get; }
 
-        public void Show(FloatingScreen panelScreen, Vector3 leaderboardPosition, PlatformLeaderboardViewController platformLeaderboardViewController)
+        internal void Show(FloatingScreen panelScreen, Vector3 leaderboardPosition, PlatformLeaderboardViewController platformLeaderboardViewController)
         {
             if (panelViewController != null)
             {
@@ -38,7 +48,7 @@ namespace LeaderboardCore.Models
             }
         }
 
-        public void Hide(FloatingScreen panelScreen)
+        internal void Hide(FloatingScreen panelScreen)
         {
             if (panelScreen != null)
             {

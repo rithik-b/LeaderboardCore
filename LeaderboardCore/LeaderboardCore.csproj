@@ -8,6 +8,7 @@
 		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 		<LocalRefsDir Condition="Exists('..\Refs')">..\Refs</LocalRefsDir>
 		<BeatSaberDir>$(LocalRefsDir)</BeatSaberDir>
+		<DocumentationFile>LeaderboardCore.xml</DocumentationFile>
 		<AppOutputBase>$(MSBuildProjectDirectory)\</AppOutputBase>
 		<DebugType>portable</DebugType>
 	</PropertyGroup>

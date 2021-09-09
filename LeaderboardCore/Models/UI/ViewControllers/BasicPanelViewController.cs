@@ -4,12 +4,13 @@ using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.ViewControllers;
 using HMUI;
 using IPA.Utilities;
+using System.ComponentModel;
 using System.Reflection;
 using UnityEngine;
 
 namespace LeaderboardCore.Models.UI.ViewControllers
 {
-    public abstract class BasicPanelViewController : BSMLResourceViewController
+    public abstract class BasicPanelViewController : BSMLResourceViewController, INotifyPropertyChanged
     {
         public override string ResourceName { get => "LeaderboardCore.Models.UI.Views.basic-panel.bsml"; }
 
@@ -17,6 +18,8 @@ namespace LeaderboardCore.Models.UI.ViewControllers
         {
             get => Utilities.GetResourceContent(Assembly.GetAssembly(typeof(BasicPanelViewController)), ResourceName);
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         #region UI Components
         [UIComponent("outer")]
@@ -55,17 +58,17 @@ namespace LeaderboardCore.Models.UI.ViewControllers
         #endregion
 
         #region Loading
-        private bool _isLoaded = false;
+        protected bool __isLoaded = false;
 
         [UIValue("is-loaded")]
         protected bool isLoaded
         {
-            get => _isLoaded;
+            get => __isLoaded;
             set
             {
-                _isLoaded = value;
-                base.NotifyPropertyChanged("is-loaded");
-                base.NotifyPropertyChanged("is-loading");
+                __isLoaded = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(isLoaded)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(isLoading)));
             }
         }
 

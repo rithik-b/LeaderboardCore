@@ -89,7 +89,7 @@
 	<ItemGroup>
 		<EmbeddedResource Include="manifest.json" />
 		<EmbeddedResource Include="Models\UI\Views\basic-leaderboard.bsml" />
-		<EmbeddedResource Include="Models\UI\Views\basic-panel-right.bsml" />
+		<EmbeddedResource Include="Models\UI\Views\basic-panel-double-text.bsml" />
 		<EmbeddedResource Include="Models\UI\Views\basic-panel.bsml" />
 		<EmbeddedResource Include="UI\Resources\pixel.png" />
 		<EmbeddedResource Include="Images\*.png" />
@@ -98,7 +98,7 @@
 
 	<ItemGroup>
 	  <None Remove="Models\UI\Views\basic-leaderboard.bsml" />
-	  <None Remove="Models\UI\Views\basic-panel-right.bsml" />
+	  <None Remove="Models\UI\Views\basic-panel-double-text.bsml" />
 	  <None Remove="Models\UI\Views\basic-panel.bsml" />
 	  <None Remove="UI\Resources\pixel.png" />
 	</ItemGroup>

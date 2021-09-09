@@ -11,20 +11,27 @@ namespace LeaderboardCore.Models.UI.ViewControllers
 {
     public abstract class BasicDoubleTextPanelViewController : BasicPanelViewController
     {
-        public override string ResourceName { get => "LeaderboardCore.Models.UI.Views.basic-panel-right.bsml"; }
-        protected override string rightSideBSML { get => Utilities.GetResourceContent(Assembly.GetAssembly(typeof(BasicDoubleTextPanelViewController)), ResourceName); }
+        protected string ExtraResourceName { get => "LeaderboardCore.Models.UI.Views.basic-panel-double-text.bsml"; }
+        protected override string customBSML { get => Utilities.GetResourceContent(Assembly.GetAssembly(typeof(BasicDoubleTextPanelViewController)), ExtraResourceName); }
+        protected override object customHost => this;
 
         #region Text
-        protected abstract bool IsTopTextClickable { get; }
-        protected abstract string TopHoverHint { get; }
-        protected abstract bool IsBottomTextClickable { get; }
-        protected abstract string BottomHoverHint { get; }
+        protected virtual bool IsTopTextClickable { get => false; }
+        protected virtual string TopHoverHint { get => ""; }
+        protected virtual void OnTopClicked() { }
+
+        protected virtual bool IsBottomTextClickable { get => false; }
+        protected virtual string BottomHoverHint { get => ""; }
+        protected virtual void OnBottomClicked() { }
 
         #region toptext
         [UIValue("is-clickable-top")]
         protected bool isClickableTop { get => IsTopTextClickable; }
         [UIValue("not-is-clickable-top")]
         protected bool notIsClickableTop { get => !isClickableTop; }
+
+        [UIAction("clicked-top")]
+        protected void ClickedTop() { OnTopClicked(); }
 
         private string _topText;
         [UIValue("top-text")]
@@ -43,9 +50,11 @@ namespace LeaderboardCore.Models.UI.ViewControllers
         #region bottomtext
         [UIValue("is-clickable-bottom")]
         protected bool isClickableBottom { get => IsBottomTextClickable; }
-
         [UIValue("not-is-clickable-bottom")]
         protected bool notIsClickableBottom { get => !isClickableBottom; }
+
+        [UIAction("clicked-bottom")]
+        protected void ClickedBottom() { OnBottomClicked(); }
 
         private string _bottomText;
         [UIValue("bottom-text")]

@@ -33,9 +33,10 @@ namespace LeaderboardCore.Models.UI.ViewControllers
         #endregion
 
         #region Logo
-        protected abstract bool IsLogoClickable { get; }
+        protected virtual bool IsLogoClickable { get => false; }
         protected abstract string LogoSource { get; }
-        protected abstract string LogoHoverHint { get; }
+        protected virtual string LogoHoverHint { get => ""; }
+        protected virtual void OnLogoClicked() {}
 
         [UIValue("is-logo-clickable")]
         protected bool isLogoClickable { get => IsLogoClickable; }
@@ -50,7 +51,7 @@ namespace LeaderboardCore.Models.UI.ViewControllers
         protected string logoHoverHint { get => LogoHoverHint; }
 
         [UIAction("clicked-logo")]
-        protected void ClickedLogo() { }
+        protected void ClickedLogo() { OnLogoClicked(); }
         #endregion
 
         #region Loading
@@ -73,10 +74,13 @@ namespace LeaderboardCore.Models.UI.ViewControllers
         #endregion
 
         #region RightSide
-        protected abstract string rightSideBSML { get; }
+        private bool _parsedCustomBSML = false;
+        protected abstract string customBSML { get; }
+        protected abstract object customHost { get; }
 
-        [UIObject("panelRightSide")]
-        private GameObject panelRightSide;
+        [UIObject("panel-custom")]
+        protected GameObject panelCustom;
+
         #endregion
 
         #region Background
@@ -99,12 +103,6 @@ namespace LeaderboardCore.Models.UI.ViewControllers
         [UIAction("#post-parse")]
         public void Parsed()
         {
-            if (!panelRightSide)
-            {
-                Plugin.Log.Debug("hmmm");
-            }
-            BSMLParser.instance.Parse(rightSideBSML, panelRightSide);
-
             _background = outer.background as ImageView;
 
             // show some actual color
@@ -121,6 +119,12 @@ namespace LeaderboardCore.Models.UI.ViewControllers
             separator.SetField<ImageView, float>("_skew", 0.18f);
             clickableLogo.SetField<ImageView, float>("_skew", 0.18f);
             plainLogo.SetField<ImageView, float>("_skew", 0.18f);
+
+            if (!_parsedCustomBSML)
+            {
+                _parsedCustomBSML = true;
+                BSMLParser.instance.Parse(customBSML, panelCustom, customHost);
+            }
         }
     }
 }

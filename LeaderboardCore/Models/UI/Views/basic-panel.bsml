@@ -7,8 +7,8 @@
     <vertical pref-width='0.5' pref-height='10'>
       <image id='separator' src='LeaderboardCore.UI.Resources.pixel.png'/>
     </vertical>
-    <vertical active='~is-loaded' id ='panelRightSide' pref-width='70' pref-height='10'>
-      <!-- Custom right-hand code goes here-->
+    <vertical active='~is-loaded' id='panel-custom' pref-width='70' pref-height='10'>
+      <!-- Custom right-side code goes here-->
     </vertical>
     <vertical active='~is-loading' pref-width='70' pref-height='10' >
       <vertical pref-width='10'>

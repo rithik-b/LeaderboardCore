@@ -7,13 +7,14 @@ using IPA.Utilities;
 using Polyglot;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
 using UnityEngine;
 using Zenject;
 
 namespace LeaderboardCore.Models.UI.ViewControllers
 {
-    public abstract class BasicLeaderboardViewController : BSMLResourceViewController
+    public abstract class BasicLeaderboardViewController : BSMLResourceViewController, INotifyPropertyChanged
     {
         [Inject]
         PlatformLeaderboardViewController _platformLeaderboardViewController;
@@ -34,52 +35,97 @@ namespace LeaderboardCore.Models.UI.ViewControllers
             get => Utilities.GetResourceContent(Assembly.GetAssembly(typeof(BasicLeaderboardViewController)), ResourceName);
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         [UIComponent("leaderboard")]
-        private LeaderboardTableView table;
+        protected LeaderboardTableView table;
 
         #region Segmented icon control
-        protected abstract bool useAroundPlayer { get; }
-        protected abstract bool useFriends { get; }
+        protected virtual bool useAroundPlayer { get => true; }
+        protected virtual bool useFriends { get => false; }
 
-        private bool _upEnabled = true;
-        private bool _downEnabled = true;
+        protected abstract void OnUpClicked();
+        protected abstract void OnDownClicked();
+
+        protected bool __upEnabled = true;
+        protected bool __downEnabled = true;
 
         [UIValue("up-enabled")]
         protected bool upEnabled
         {
-            get => _upEnabled;
+            get => __upEnabled;
             set
             {
-                _upEnabled = value;
-                base.NotifyPropertyChanged("up-enabled");
+                __upEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(upEnabled)));
             }
         }
+
+        [UIAction("up-clicked")]
+        protected void UpClicked() { OnUpClicked();  }
 
         [UIValue("down-enabled")]
         protected bool downEnabled
         {
-            get => _downEnabled;
+            get => __downEnabled;
             set
             {
-                _downEnabled = value;
-                base.NotifyPropertyChanged("down-enabled");
+                __downEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(downEnabled)));
             }
         }
+
+        [UIAction("down-clicked")]
+        protected void DownClicked() { OnDownClicked(); }
 
         [UIValue("cell-data")]
         protected List<IconSegmentedControl.DataItem> cellData = new List<IconSegmentedControl.DataItem>();
 
         public event Action<LeaderboardScope> didSelectLeaderboardScopeEvent;
 
-        [UIAction("select-cell")]
+        [UIAction("cell-selected")]
         protected void OnSelectCell(SegmentedControl segmentedControl, int index)
         {
             LeaderboardScope scope = (LeaderboardScope) (index + (useAroundPlayer ? 0 : 1));
             didSelectLeaderboardScopeEvent?.Invoke(scope);
         }
+
+        public void SetUpEnabled(bool upEnabled)
+        {
+            this.upEnabled = upEnabled;
+        }
+
+        public void SetDownEnabled(bool downEnabled)
+        {
+            this.downEnabled = downEnabled;
+        }
         #endregion
 
-        public void Awake()
+        #region Loading
+        protected bool __isLoaded = false;
+
+        [UIValue("is-loaded")]
+        protected virtual bool isLoaded
+        {
+            get => __isLoaded;
+            set
+            {
+                __isLoaded = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(isLoaded)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(isLoading)));
+            }
+        }
+
+        [UIValue("is-loading")]
+        protected bool isLoading { get => !isLoaded; }
+
+        public void SetLoaded(bool loaded)
+        {
+            isLoaded = loaded;
+        }
+        #endregion
+
+        public virtual void Awake()
         {
             cellData.Add(new IconSegmentedControl.DataItem(_platformLeaderboardViewController.GetField<Sprite, PlatformLeaderboardViewController>("_globalLeaderboardIcon"), Localization.Get("BUTTON_HIGHSCORES_GLOBAL")));
             if (useAroundPlayer)
@@ -90,11 +136,22 @@ namespace LeaderboardCore.Models.UI.ViewControllers
             {
                 cellData.Add(new IconSegmentedControl.DataItem(_platformLeaderboardViewController.GetField<Sprite, PlatformLeaderboardViewController>("_friendsLeaderboardIcon"), Localization.Get("BUTTON_HIGHSCORES_FRIENDS")));
             }
+            isLoaded = false;
         }
 
     public void SetScores(List<LeaderboardTableView.ScoreData> scores, int specialScorePos)
         {
-            table.SetScores(scores, specialScorePos);
+            if (table)
+            {
+                table.SetScores(scores, specialScorePos);
+                isLoaded = true;
+            }
+            else
+            {
+                Plugin.Log.Warn("Tried to set scores when there was no table!");
+            }
         }
     }
+
+    
 }

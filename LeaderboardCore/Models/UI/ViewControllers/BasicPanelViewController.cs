@@ -19,7 +19,14 @@ namespace LeaderboardCore.Models.UI.ViewControllers
             get => Utilities.GetResourceContent(Assembly.GetAssembly(typeof(BasicPanelViewController)), ResourceName);
         }
 
+        #region events
         public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(PropertyChangedEventArgs eventArgs)
+        {
+            PropertyChanged?.Invoke(this, eventArgs);
+        }
+        #endregion
 
         #region UI Components
         [UIComponent("outer")]
@@ -104,7 +111,7 @@ namespace LeaderboardCore.Models.UI.ViewControllers
         #endregion
 
         [UIAction("#post-parse")]
-        public void Parsed()
+        public virtual void Parsed()
         {
             _background = outer.background as ImageView;
 

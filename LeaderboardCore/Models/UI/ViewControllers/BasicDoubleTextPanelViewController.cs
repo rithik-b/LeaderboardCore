@@ -1,11 +1,8 @@
 ﻿using BeatSaberMarkupLanguage;
 using BeatSaberMarkupLanguage.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 
 namespace LeaderboardCore.Models.UI.ViewControllers
 {
@@ -26,12 +23,12 @@ namespace LeaderboardCore.Models.UI.ViewControllers
 
         #region toptext
         [UIValue("is-clickable-top")]
-        protected bool isClickableTop { get => IsTopTextClickable; }
+        protected bool isClickableTop { get => IsTopTextClickable || TopHoverHint.Length > 0; }
         [UIValue("not-is-clickable-top")]
         protected bool notIsClickableTop { get => !isClickableTop; }
 
         [UIAction("clicked-top")]
-        protected void ClickedTop() { OnTopClicked(); }
+        protected void ClickedTop() { if (IsTopTextClickable) OnTopClicked(); }
 
         private string _topText;
         [UIValue("top-text")]
@@ -40,7 +37,7 @@ namespace LeaderboardCore.Models.UI.ViewControllers
             set
             {
                 _topText = value;
-                base.NotifyPropertyChanged("top-text");
+                OnPropertyChanged(new PropertyChangedEventArgs(nameof(topText)));
             }
         }
 
@@ -49,12 +46,12 @@ namespace LeaderboardCore.Models.UI.ViewControllers
         #endregion
         #region bottomtext
         [UIValue("is-clickable-bottom")]
-        protected bool isClickableBottom { get => IsBottomTextClickable; }
+        protected bool isClickableBottom { get => IsBottomTextClickable || BottomHoverHint.Length > 0; }
         [UIValue("not-is-clickable-bottom")]
         protected bool notIsClickableBottom { get => !isClickableBottom; }
 
         [UIAction("clicked-bottom")]
-        protected void ClickedBottom() { OnBottomClicked(); }
+        protected void ClickedBottom() { if (IsBottomTextClickable) OnBottomClicked(); }
 
         private string _bottomText;
         [UIValue("bottom-text")]
@@ -64,7 +61,7 @@ namespace LeaderboardCore.Models.UI.ViewControllers
             set
             {
                 _bottomText = value;
-                base.NotifyPropertyChanged("bottom-text");
+                OnPropertyChanged(new PropertyChangedEventArgs(nameof(bottomText)));
             }
         }
 

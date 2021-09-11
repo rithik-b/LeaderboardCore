@@ -89,16 +89,6 @@ namespace LeaderboardCore.Models.UI.ViewControllers
             LeaderboardScope scope = (LeaderboardScope) (index + (useAroundPlayer ? 0 : 1));
             didSelectLeaderboardScopeEvent?.Invoke(scope);
         }
-
-        public void SetUpEnabled(bool upEnabled)
-        {
-            this.upEnabled = upEnabled;
-        }
-
-        public void SetDownEnabled(bool downEnabled)
-        {
-            this.downEnabled = downEnabled;
-        }
         #endregion
 
         #region Loading
@@ -118,11 +108,6 @@ namespace LeaderboardCore.Models.UI.ViewControllers
 
         [UIValue("is-loading")]
         protected bool isLoading { get => !isLoaded; }
-
-        public void SetLoaded(bool loaded)
-        {
-            isLoaded = loaded;
-        }
         #endregion
 
         public virtual void Awake()

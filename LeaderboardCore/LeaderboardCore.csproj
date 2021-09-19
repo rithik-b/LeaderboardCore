@@ -27,6 +27,10 @@
 		  <HintPath>$(BeatSaberDir)\Libs\0Harmony.dll</HintPath>
 		  <Private>False</Private>
 		</Reference>
+		<Reference Include="Polyglot">
+		  <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Polyglot.dll</HintPath>
+		  <Private>False</Private>
+		</Reference>
 		<Reference Include="Unity.TextMeshPro">
 		  <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Unity.TextMeshPro.dll</HintPath>
 		  <Private>False</Private>
@@ -89,8 +93,19 @@
 	
 	<ItemGroup>
 		<EmbeddedResource Include="manifest.json" />
+		<EmbeddedResource Include="Models\UI\Views\basic-leaderboard.bsml" />
+		<EmbeddedResource Include="Models\UI\Views\basic-panel-double-text.bsml" />
+		<EmbeddedResource Include="Models\UI\Views\basic-panel.bsml" />
+		<EmbeddedResource Include="UI\Resources\pixel.png" />
 		<EmbeddedResource Include="Images\*.png" />
 		<EmbeddedResource Include="UI\Views\*.bsml" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Models\UI\Views\basic-leaderboard.bsml" />
+	  <None Remove="Models\UI\Views\basic-panel-double-text.bsml" />
+	  <None Remove="Models\UI\Views\basic-panel.bsml" />
+	  <None Remove="UI\Resources\pixel.png" />
 	</ItemGroup>
 
 	<ItemGroup>

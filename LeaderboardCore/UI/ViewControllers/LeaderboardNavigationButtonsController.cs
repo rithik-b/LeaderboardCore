@@ -20,8 +20,10 @@ namespace LeaderboardCore.UI.ViewControllers
 
         private bool leaderboardLoaded = false;
         private IPreviewBeatmapLevel selectedLevel;
+
         private List<CustomLeaderboard> customLeaderboards;
         private int currentIndex = 0;
+        private CustomLeaderboard lastLeaderboard;
 
         private Transform containerTransform;
         private Vector3 containerPosition;
@@ -107,15 +109,22 @@ namespace LeaderboardCore.UI.ViewControllers
         public void OnLeaderboardLoaded(bool loaded)
         {
             leaderboardLoaded = loaded;
+            int lastLeaderboardIndex = customLeaderboards == null ? -1 : customLeaderboards.IndexOf(lastLeaderboard);
 
             if (!loaded || selectedLevel == null || !(selectedLevel is CustomPreviewBeatmapLevel))
             {
-                if (currentIndex != 0)
+                if (lastLeaderboard != null && lastLeaderboardIndex == -1 && currentIndex != 0)
                 {
-                    customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
+                    lastLeaderboard.Hide(customPanelFloatingScreen);
                     currentIndex = 0;
                     UnYeetSS();
                 }
+            }
+            else if (loaded && lastLeaderboard != null && lastLeaderboardIndex != -1 && currentIndex == 0)
+            {
+                lastLeaderboard.Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
+                currentIndex = lastLeaderboardIndex + 1;
+                YeetSS();
             }
 
             NotifyPropertyChanged(nameof(LeftButtonActive));
@@ -145,16 +154,18 @@ namespace LeaderboardCore.UI.ViewControllers
         [UIAction("left-button-click")]
         private void LeftButtonClick()
         {
-            customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
+            lastLeaderboard.Hide(customPanelFloatingScreen);
             currentIndex--;
 
             if (currentIndex == 0)
             {
                 UnYeetSS();
+                lastLeaderboard = null;
             }
             else
             {
-                customLeaderboards[currentIndex - 1].Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
+                lastLeaderboard = customLeaderboards[currentIndex - 1];
+                lastLeaderboard.Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
             }
 
             NotifyPropertyChanged(nameof(LeftButtonActive));
@@ -170,11 +181,12 @@ namespace LeaderboardCore.UI.ViewControllers
             }
             else
             {
-                customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
+                lastLeaderboard.Hide(customPanelFloatingScreen);
             }
 
             currentIndex++;
-            customLeaderboards[currentIndex - 1].Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
+            lastLeaderboard = customLeaderboards[currentIndex - 1];
+            lastLeaderboard.Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
 
             NotifyPropertyChanged(nameof(LeftButtonActive));
             NotifyPropertyChanged(nameof(RightButtonActive));
@@ -182,12 +194,21 @@ namespace LeaderboardCore.UI.ViewControllers
 
         public void OnLeaderboardsChanged(List<CustomLeaderboard> customLeaderboards)
         {
-            if (currentIndex != 0)
+            int lastLeaderboardIndex = customLeaderboards.IndexOf(lastLeaderboard);
+
+            if (lastLeaderboard != null && lastLeaderboardIndex == -1 && currentIndex != 0)
             {
-                this.customLeaderboards[currentIndex - 1].Hide(customPanelFloatingScreen);
+                lastLeaderboard.Hide(customPanelFloatingScreen);
                 currentIndex = 0;
                 UnYeetSS();
             }
+            else if (lastLeaderboard != null && lastLeaderboardIndex != -1 && currentIndex == 0)
+            {
+                lastLeaderboard.Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
+                currentIndex = lastLeaderboardIndex + 1;
+                YeetSS();
+            }
+
             this.customLeaderboards = customLeaderboards;
             NotifyPropertyChanged(nameof(LeftButtonActive));
             NotifyPropertyChanged(nameof(RightButtonActive));

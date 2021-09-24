@@ -57,6 +57,149 @@
             The ViewController for the leaderboard itself.
             </summary>
         </member>
+        <member name="T:LeaderboardCore.Models.UI.ViewControllers.BasicDoubleTextPanelViewController">
+            <summary>
+            Absract class for a <see cref="T:LeaderboardCore.Models.UI.ViewControllers.BasicPanelViewController"/> with both a top text and a bottom text on the right side (the same as what ScoreSaber has).
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicDoubleTextPanelViewController.IsTopTextClickable">
+            <summary>
+            Whether or not the top text should be clickable.
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicDoubleTextPanelViewController.TopHoverHint">
+            <summary>
+            What hover hint to display when hovering over the top text.
+            </summary>
+        </member>
+        <member name="M:LeaderboardCore.Models.UI.ViewControllers.BasicDoubleTextPanelViewController.OnTopClicked">
+            <summary>
+            Called when the top text is clicked (if <see cref="P:LeaderboardCore.Models.UI.ViewControllers.BasicDoubleTextPanelViewController.IsTopTextClickable"/> is true).
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicDoubleTextPanelViewController.IsBottomTextClickable">
+            <summary>
+            Whether or not the bottom text should be clickable.
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicDoubleTextPanelViewController.BottomHoverHint">
+            <summary>
+            What hover hint to display when hovering over the bottom text.
+            </summary>
+        </member>
+        <member name="M:LeaderboardCore.Models.UI.ViewControllers.BasicDoubleTextPanelViewController.OnBottomClicked">
+            <summary>
+            Called when the bottom text is clicked (if <see cref="P:LeaderboardCore.Models.UI.ViewControllers.BasicDoubleTextPanelViewController.IsBottomTextClickable"/> is true).
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicDoubleTextPanelViewController.topText">
+            <summary>
+            Set this to change the value of the top text.
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicDoubleTextPanelViewController.bottomText">
+            <summary>
+            Set this to change the value of the bottom text.
+            </summary>
+        </member>
+        <member name="T:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController">
+            <summary>
+            Abstract class for a basic leaderboard view.
+            </summary>
+        </member>
+        <member name="T:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.LeaderboardScope">
+            <summary>
+            The side buttons next to the leaderboard, typically meant for controlling what data is displayed.
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.useAroundPlayer">
+            <summary>
+            Whether or not the "Around Player" <see cref="T:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.LeaderboardScope"/> is enabled.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.useFriends" -->
+        <member name="M:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.OnUpClicked">
+            <summary>
+            Called when the up arrow next to the leaderboard is clicked.
+            </summary>
+        </member>
+        <member name="M:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.OnDownClicked">
+            <summary>
+            Called when the down arrow next to the leaderboard is clicked.
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.upEnabled">
+            <summary>
+            Set this to change whether or not the up arrow is interactable.
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.downEnabled">
+            <summary>
+            Set this to change whether or not the down arrow is interactable.
+            </summary>
+        </member>
+        <member name="E:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.didSelectLeaderboardScopeEvent">
+            <summary>
+            Subscribe to this event to get notified when a <see cref="T:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.LeaderboardScope"/> is interacted with.
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.isLoaded">
+            <summary>
+            Set this to indicate whether or not the content is currently loaded. When false, a loading icon will display on the leaderboard.
+            </summary>
+        </member>
+        <member name="M:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.SetScores(System.Collections.Generic.List{LeaderboardTableView.ScoreData},System.Int32)">
+            <summary>
+            Changes the data displayed on the leaderboard to the given scores.
+            </summary>
+            <param name="scores">A list of ScoreDatas to populate the leaderboard with. Behavior is undefined if more than 10 scores are provided. /></param>
+            <param name="specialScorePos">The score position (0-indexed in order of the given scores) to highlight on the leaderboard. Set to -1 if you wish for no score to be highlighted.</param>
+        </member>
+        <member name="T:LeaderboardCore.Models.UI.ViewControllers.BasicPanelViewController">
+            <summary>
+            Abstract class for a basic panel view. Must provide a logo and custom view for the right side of the panel.
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicPanelViewController.IsLogoClickable">
+            <summary>
+            Whether or not the logo is clickable.
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicPanelViewController.LogoSource">
+            <summary>
+            The namespace location of the logo image.
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicPanelViewController.LogoHoverHint">
+            <summary>
+            What hover hint to display when hovering over the logo.
+            </summary>
+        </member>
+        <member name="M:LeaderboardCore.Models.UI.ViewControllers.BasicPanelViewController.OnLogoClicked">
+            <summary>
+            Called when the logo is clicked (if <see cref="P:LeaderboardCore.Models.UI.ViewControllers.BasicPanelViewController.IsLogoClickable"/> is true).
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicPanelViewController.isLoaded">
+            <summary>
+            Set this to indicate whether or not the content is currently loaded. When false, a loading icon will display on the panel.
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicPanelViewController.customBSML">
+            <summary>
+            The raw bsml content to display on the right side of the panel.
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicPanelViewController.customHost">
+            <summary>
+            The object that handles the UIValues, UIActions, and UIEvents for the given <see cref="P:LeaderboardCore.Models.UI.ViewControllers.BasicPanelViewController.customBSML"/>.
+            </summary>
+        </member>
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicPanelViewController.backgroundColor">
+            <summary>
+            Set this to change the background color of the panel.
+            </summary>
+        </member>
         <member name="M:LeaderboardCore.Plugin.OnEnable">
             <summary>
             Called when the plugin is enabled (including when the game starts if the plugin is enabled).

@@ -10,6 +10,9 @@ using UnityEngine;
 
 namespace LeaderboardCore.Models.UI.ViewControllers
 {
+    /// <summary>
+    /// Abstract class for a basic panel view. Must provide a logo and custom view for the right side of the panel.
+    /// </summary>
     public abstract class BasicPanelViewController : BSMLResourceViewController, INotifyPropertyChanged
     {
         public override string ResourceName { get => "LeaderboardCore.Models.UI.Views.basic-panel.bsml"; }
@@ -43,9 +46,24 @@ namespace LeaderboardCore.Models.UI.ViewControllers
         #endregion
 
         #region Logo
+        /// <summary>
+        /// Whether or not the logo is clickable.
+        /// </summary>
         protected virtual bool IsLogoClickable { get => false; }
+
+        /// <summary>
+        /// The namespace location of the logo image.
+        /// </summary>
         protected abstract string LogoSource { get; }
+
+        /// <summary>
+        /// What hover hint to display when hovering over the logo.
+        /// </summary>
         protected virtual string LogoHoverHint { get => ""; }
+
+        /// <summary>
+        /// Called when the logo is clicked (if <see cref="IsLogoClickable"/> is true).
+        /// </summary>
         protected virtual void OnLogoClicked() {}
 
         [UIValue("is-logo-clickable")]
@@ -67,6 +85,9 @@ namespace LeaderboardCore.Models.UI.ViewControllers
         #region Loading
         protected bool __isLoaded = false;
 
+        /// <summary>
+        /// Set this to indicate whether or not the content is currently loaded. When false, a loading icon will display on the panel.
+        /// </summary>
         [UIValue("is-loaded")]
         protected bool isLoaded
         {
@@ -85,7 +106,15 @@ namespace LeaderboardCore.Models.UI.ViewControllers
 
         #region RightSide
         private bool _parsedCustomBSML = false;
+
+        /// <summary>
+        /// The raw bsml content to display on the right side of the panel.
+        /// </summary>
         protected abstract string customBSML { get; }
+
+        /// <summary>
+        /// The object that handles the UIValues, UIActions, and UIEvents for the given <see cref="customBSML"/>.
+        /// </summary>
         protected abstract object customHost { get; }
 
         [UIObject("panel-custom")]
@@ -95,6 +124,10 @@ namespace LeaderboardCore.Models.UI.ViewControllers
 
         #region Background
         private Color _backgroundColor = Color.black;
+
+        /// <summary>
+        /// Set this to change the background color of the panel.
+        /// </summary>
         protected Color backgroundColor
         {
             get => _backgroundColor;

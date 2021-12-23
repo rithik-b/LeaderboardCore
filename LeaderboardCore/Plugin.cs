@@ -26,7 +26,7 @@ namespace LeaderboardCore
         {
             Instance = this;
             Plugin.Log = logger;
-            zenjector.OnMenu<LeaderboardCoreMenuInstaller>();
+            zenjector.Install<LeaderboardCoreMenuInstaller>(Location.Menu);
         }
 
 

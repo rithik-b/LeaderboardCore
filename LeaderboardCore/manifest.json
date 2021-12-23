@@ -5,11 +5,11 @@
   "author": "PixelBoom & PulseLane",
   "version": "1.0.0",
   "description": "A utility for custom leaderboards that rely on ScoreSaber.",
-  "gameVersion": "1.18.0",
+  "gameVersion": "1.19.0",
     "dependsOn": {
         "BSIPA": "^4.2.0",
-        "BeatSaberMarkupLanguage": "^1.5.10",
-        "SiraUtil": "^2.5.8",
-        "ScoreSaber": "^3.1.10"
+        "BeatSaberMarkupLanguage": "^1.6.0",
+        "SiraUtil": "^3.0.0",
+        "ScoreSaber": "^3.1.11"
     }
 }

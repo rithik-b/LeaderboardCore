@@ -8,48 +8,37 @@ namespace LeaderboardCore.Managers
 {
     internal class LeaderboardCoreManager : IInitializable, IDisposable
     {
-        private readonly LevelCollectionViewController levelCollectionViewController;
-        private readonly List<IPreviewBeatmapLevelUpdater> previewBeatmapLevelUpdaters;
         private readonly List<INotifyLeaderboardActivate> notifyLeaderboardActivates;
+        private readonly List<INotifyLeaderboardSet> notifyLeaderboardSets;
         private readonly List<INotifyLeaderboardLoad> notifyLeaderboardLoads;
         private readonly List<INotifyScoreUpload> notifyScoreUploads;
 
-        public LeaderboardCoreManager(LevelCollectionViewController levelCollectionViewController, List<IPreviewBeatmapLevelUpdater> previewBeatmapLevelUpdaters,
-            List<INotifyLeaderboardActivate> notifyLeaderboardActivates, List<INotifyLeaderboardLoad> notifyLeaderboardLoads, List<INotifyScoreUpload> notifyScoreUploads)
+        public LeaderboardCoreManager(List<INotifyLeaderboardActivate> notifyLeaderboardActivates, List<INotifyLeaderboardSet> notifyLeaderboardSets,
+            List<INotifyLeaderboardLoad> notifyLeaderboardLoads, List<INotifyScoreUpload> notifyScoreUploads)
         {
-            this.levelCollectionViewController = levelCollectionViewController;
-            this.previewBeatmapLevelUpdaters = previewBeatmapLevelUpdaters;
             this.notifyLeaderboardActivates = notifyLeaderboardActivates;
+            this.notifyLeaderboardSets = notifyLeaderboardSets;
             this.notifyLeaderboardLoads = notifyLeaderboardLoads;
             this.notifyScoreUploads = notifyScoreUploads;
         }
 
         public void Initialize()
         {
-            levelCollectionViewController.didSelectLevelEvent += LevelCollectionViewController_didSelectLevelEvent;
-            PanelView_Show.ViewActivated += PlatformLeaderboardViewController_didActivateEvent;
-            PanelView_SetIsLoaded.IsLoadedChanged += PanelView_SetIsLoaded_IsLoadedChanged;
-            PanelView_SetPrompt.ScoreUploaded += PanelView_SetPrompt_ScoreUploaded;
+            PanelView_Show.ViewActivated += LeaderboardActivated;
+            PlatformLeaderboardViewController_SetData.LeaderboardSet += LeaderboardSet;
+            PanelView_SetIsLoaded.IsLoadedChanged += PanelViewLoadingChanged;
+            PanelView_SetPrompt.ScoreUploaded += ScoreUploaded;
         }
 
         public void Dispose()
         {
-            levelCollectionViewController.didSelectLevelEvent -= LevelCollectionViewController_didSelectLevelEvent;
-            PanelView_Show.ViewActivated -= PlatformLeaderboardViewController_didActivateEvent;
-            PanelView_SetIsLoaded.IsLoadedChanged -= PanelView_SetIsLoaded_IsLoadedChanged;
-            PanelView_SetPrompt.ScoreUploaded -= PanelView_SetPrompt_ScoreUploaded;
+            PanelView_Show.ViewActivated -= LeaderboardActivated;
+            PlatformLeaderboardViewController_SetData.LeaderboardSet -= LeaderboardSet;
+            PanelView_SetIsLoaded.IsLoadedChanged -= PanelViewLoadingChanged;
+            PanelView_SetPrompt.ScoreUploaded -= ScoreUploaded;
         }
 
-
-        private void LevelCollectionViewController_didSelectLevelEvent(LevelCollectionViewController levelCollectionViewController, IPreviewBeatmapLevel level)
-        {
-            foreach (var previewBeatmapLevelUpdater in previewBeatmapLevelUpdaters)
-            {
-                previewBeatmapLevelUpdater.PreviewBeatmapLevelUpdated(level);
-            }
-        }
-
-        private void PlatformLeaderboardViewController_didActivateEvent()
+        private void LeaderboardActivated()
         {
             foreach (var notifyLeaderboardActivate in notifyLeaderboardActivates)
             {
@@ -57,7 +46,15 @@ namespace LeaderboardCore.Managers
             }
         }
 
-        private void PanelView_SetIsLoaded_IsLoadedChanged(bool loaded)
+        private void LeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
+        {
+            foreach (var notifyLeaderboardSet in notifyLeaderboardSets)
+            {
+                notifyLeaderboardSet.OnLeaderboardSet(difficultyBeatmap);
+            }
+        }
+
+        private void PanelViewLoadingChanged(bool loaded)
         {
             foreach (var notifyLeaderboardLoad in notifyLeaderboardLoads)
             {
@@ -65,7 +62,7 @@ namespace LeaderboardCore.Managers
             }
         }
 
-        private void PanelView_SetPrompt_ScoreUploaded()
+        private void ScoreUploaded()
         {
             foreach (var notifyScoreUpload in notifyScoreUploads)
             {

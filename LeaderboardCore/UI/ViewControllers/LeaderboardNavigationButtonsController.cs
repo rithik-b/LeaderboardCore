@@ -12,7 +12,7 @@ namespace LeaderboardCore.UI.ViewControllers
 {
     [HotReload(RelativePathToLayout = @"..\Views\LeaderboardNavigationButtons.bsml")]
     [ViewDefinition("LeaderboardCore.UI.Views.LeaderboardNavigationButtons.bsml")]
-    internal class LeaderboardNavigationButtonsController : BSMLAutomaticViewController, IInitializable, IDisposable, IPreviewBeatmapLevelUpdater, INotifyLeaderboardActivate, INotifyLeaderboardLoad, INotifyCustomLeaderboardsChange
+    internal class LeaderboardNavigationButtonsController : BSMLAutomaticViewController, IInitializable, IDisposable, INotifyLeaderboardSet, INotifyLeaderboardActivate, INotifyLeaderboardLoad, INotifyCustomLeaderboardsChange
     {
         private PlatformLeaderboardViewController platformLeaderboardViewController;
         private FloatingScreen buttonsFloatingScreen;
@@ -72,10 +72,10 @@ namespace LeaderboardCore.UI.ViewControllers
             OnLeaderboardLoaded(leaderboardLoaded);
         }
 
-        public void PreviewBeatmapLevelUpdated(IPreviewBeatmapLevel beatmapLevel)
+        public void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
         {
-            selectedLevel = beatmapLevel;
-            if (isActiveAndEnabled || beatmapLevel is CustomPreviewBeatmapLevel)
+            selectedLevel = difficultyBeatmap.level;
+            if (isActiveAndEnabled || selectedLevel is CustomPreviewBeatmapLevel)
             {
                 OnLeaderboardLoaded(leaderboardLoaded);
             }

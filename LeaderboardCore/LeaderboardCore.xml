@@ -15,6 +15,17 @@
             <param name="loaded"></param>
             </summary>
         </member>
+        <member name="T:LeaderboardCore.Interfaces.INotifyLeaderboardSet">
+            <summary>
+            Implement this interface to be notified when a map is selected.
+            </summary>
+        </member>
+        <member name="M:LeaderboardCore.Interfaces.INotifyLeaderboardSet.OnLeaderboardSet(IDifficultyBeatmap)">
+            <summary>
+            Called when a map has been selected on the leaderboard.
+            <param name="difficultyBeatmap"></param>
+            </summary>
+        </member>
         <member name="T:LeaderboardCore.Interfaces.INotifyScoreUpload">
             <summary>
             Implement this interface to be notified if ScoreSaber just uploaded a score.

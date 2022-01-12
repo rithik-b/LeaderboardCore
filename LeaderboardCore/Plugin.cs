@@ -26,7 +26,7 @@ namespace LeaderboardCore
         {
             Instance = this;
             Plugin.Log = logger;
-            zenjector.OnMenu<LeaderboardCoreMenuInstaller>();
+            zenjector.Install<LeaderboardCoreMenuInstaller>(Location.Menu);
         }
 
 
@@ -91,8 +91,7 @@ namespace LeaderboardCore
         {
             try
             {
-                // Removes all patches with this HarmonyId
-                harmony.UnpatchAll(HarmonyId);
+                harmony.UnpatchSelf();
             }
             catch (Exception ex)
             {

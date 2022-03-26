@@ -43,27 +43,36 @@ namespace LeaderboardCore.UI.ViewControllers
         public void Initialize()
         {
             buttonsFloatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(120f, 25f), false, Vector3.zero, Quaternion.identity);
-            buttonsFloatingScreen.transform.SetParent(platformLeaderboardViewController.transform);
-            buttonsFloatingScreen.transform.localPosition = new Vector3(3f, 50f);
-            buttonsFloatingScreen.transform.localScale = Vector3.one;
-            buttonsFloatingScreen.gameObject.SetActive(false);
-            buttonsFloatingScreen.gameObject.SetActive(true);
-            buttonsFloatingScreen.gameObject.name = "LeaderboardNavigationButtonsPanel";
+            
+            var buttonsFloatingScreenTransform = buttonsFloatingScreen.transform;
+            buttonsFloatingScreenTransform.SetParent(platformLeaderboardViewController.transform);
+            buttonsFloatingScreenTransform.localPosition = new Vector3(3f, 50f);
+            buttonsFloatingScreenTransform.localScale = Vector3.one;
+
+            var buttonsFloatingScreenGO = buttonsFloatingScreen.gameObject;
+            buttonsFloatingScreenGO.SetActive(false);
+            buttonsFloatingScreenGO.SetActive(true);
+            buttonsFloatingScreenGO.name = "LeaderboardNavigationButtonsPanel";
+            
 
             customPanelFloatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(100f, 25f), false, Vector3.zero, Quaternion.identity);
-            customPanelFloatingScreen.transform.SetParent(platformLeaderboardViewController.transform);
-            customPanelFloatingScreen.transform.localPosition = new Vector3(3f, 50f);
-            customPanelFloatingScreen.transform.localScale = Vector3.one;
-            customPanelFloatingScreen.gameObject.SetActive(false);
-            customPanelFloatingScreen.gameObject.SetActive(true);
-            customPanelFloatingScreen.gameObject.name = "CustomLeaderboardPanel";
+
+            var customFloatingScreenTransform = customPanelFloatingScreen.transform;
+            customFloatingScreenTransform.SetParent(platformLeaderboardViewController.transform);
+            customFloatingScreenTransform.localPosition = new Vector3(3f, 50f);
+            customFloatingScreenTransform.localScale = Vector3.one;
+
+            var customFloatingScreenGO = customPanelFloatingScreen.gameObject;
+            customFloatingScreenGO.SetActive(false);
+            customFloatingScreenGO.SetActive(true);
+            customFloatingScreenGO.name = "CustomLeaderboardPanel";
         }
 
         public void Dispose()
         {
             if (buttonsFloatingScreen != null && buttonsFloatingScreen.gameObject != null)
             {
-                GameObject.Destroy(buttonsFloatingScreen.gameObject);
+                Destroy(buttonsFloatingScreen.gameObject);
             }
         }
 
@@ -120,7 +129,7 @@ namespace LeaderboardCore.UI.ViewControllers
                     UnYeetSS();
                 }
             }
-            else if (loaded && lastLeaderboard != null && lastLeaderboardIndex != -1 && currentIndex == 0)
+            else if (lastLeaderboard != null && lastLeaderboardIndex != -1 && currentIndex == 0)
             {
                 lastLeaderboard.Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
                 currentIndex = lastLeaderboardIndex + 1;

@@ -190,7 +190,7 @@ namespace LeaderboardCore.UI.ViewControllers
 
         public void OnLeaderboardsChanged(List<CustomLeaderboard> customLeaderboards)
         {
-            int lastLeaderboardIndex = customLeaderboards.IndexOf(lastLeaderboard);
+            var lastLeaderboardIndex = customLeaderboards.IndexOf(lastLeaderboard);
 
             if (lastLeaderboard != null && lastLeaderboardIndex == -1 && currentIndex != 0)
             {

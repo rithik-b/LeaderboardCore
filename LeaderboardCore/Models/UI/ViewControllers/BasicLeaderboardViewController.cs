@@ -115,7 +115,7 @@ namespace LeaderboardCore.Models.UI.ViewControllers
         [UIAction("cell-selected")]
         protected void OnSelectCell(SegmentedControl segmentedControl, int index)
         {
-            LeaderboardScope scope = (LeaderboardScope) (index + (useAroundPlayer ? 0 : 1));
+            var scope = (LeaderboardScope) (index + (useAroundPlayer ? 0 : 1));
             didSelectLeaderboardScopeEvent?.Invoke(scope);
         }
         #endregion

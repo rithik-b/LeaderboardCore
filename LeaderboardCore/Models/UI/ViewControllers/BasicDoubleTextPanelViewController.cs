@@ -2,7 +2,6 @@
 using BeatSaberMarkupLanguage.Attributes;
 using System.ComponentModel;
 using System.Reflection;
-using UnityEngine;
 
 namespace LeaderboardCore.Models.UI.ViewControllers
 {

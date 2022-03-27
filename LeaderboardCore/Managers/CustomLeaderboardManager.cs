@@ -10,7 +10,7 @@ namespace LeaderboardCore.Managers
     public class CustomLeaderboardManager
     {
         private readonly List<INotifyCustomLeaderboardsChange> notifyCustomLeaderboardsChanges;
-        internal readonly List<CustomLeaderboard> customLeaderboards;
+        private readonly List<CustomLeaderboard> customLeaderboards;
 
         internal CustomLeaderboardManager(List<INotifyCustomLeaderboardsChange> notifyCustomLeaderboardsChanges)
         {
@@ -45,7 +45,7 @@ namespace LeaderboardCore.Managers
         {
             foreach (var notifyCustomLeaderboardsChange in notifyCustomLeaderboardsChanges)
             {
-                notifyCustomLeaderboardsChange.OnLeaderboardsChanged(new List<CustomLeaderboard>(customLeaderboards));
+                notifyCustomLeaderboardsChange.OnLeaderboardsChanged(customLeaderboards);
             }
         }
     }

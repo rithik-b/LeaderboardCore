@@ -9,15 +9,13 @@ namespace LeaderboardCore.Managers
     internal class LeaderboardCoreManager : IInitializable, IDisposable
     {
         private readonly List<INotifyLeaderboardActivate> notifyLeaderboardActivates;
-        private readonly List<INotifyLeaderboardSet> notifyLeaderboardSets;
         private readonly List<INotifyLeaderboardLoad> notifyLeaderboardLoads;
         private readonly List<INotifyScoreUpload> notifyScoreUploads;
 
-        public LeaderboardCoreManager(List<INotifyLeaderboardActivate> notifyLeaderboardActivates, List<INotifyLeaderboardSet> notifyLeaderboardSets,
+        public LeaderboardCoreManager(List<INotifyLeaderboardActivate> notifyLeaderboardActivates,
             List<INotifyLeaderboardLoad> notifyLeaderboardLoads, List<INotifyScoreUpload> notifyScoreUploads)
         {
             this.notifyLeaderboardActivates = notifyLeaderboardActivates;
-            this.notifyLeaderboardSets = notifyLeaderboardSets;
             this.notifyLeaderboardLoads = notifyLeaderboardLoads;
             this.notifyScoreUploads = notifyScoreUploads;
         }
@@ -25,7 +23,6 @@ namespace LeaderboardCore.Managers
         public void Initialize()
         {
             PanelView_Show.ViewActivated += LeaderboardActivated;
-            PlatformLeaderboardViewController_SetData.LeaderboardSet += LeaderboardSet;
             PanelView_SetIsLoaded.IsLoadedChanged += PanelViewLoadingChanged;
             PanelView_SetPrompt.ScoreUploaded += ScoreUploaded;
         }
@@ -33,7 +30,6 @@ namespace LeaderboardCore.Managers
         public void Dispose()
         {
             PanelView_Show.ViewActivated -= LeaderboardActivated;
-            PlatformLeaderboardViewController_SetData.LeaderboardSet -= LeaderboardSet;
             PanelView_SetIsLoaded.IsLoadedChanged -= PanelViewLoadingChanged;
             PanelView_SetPrompt.ScoreUploaded -= ScoreUploaded;
         }
@@ -43,14 +39,6 @@ namespace LeaderboardCore.Managers
             foreach (var notifyLeaderboardActivate in notifyLeaderboardActivates)
             {
                 notifyLeaderboardActivate.OnLeaderboardActivated();
-            }
-        }
-
-        private void LeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
-        {
-            foreach (var notifyLeaderboardSet in notifyLeaderboardSets)
-            {
-                notifyLeaderboardSet.OnLeaderboardSet(difficultyBeatmap);
             }
         }
 

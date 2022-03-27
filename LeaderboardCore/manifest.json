@@ -11,6 +11,7 @@
         "BeatSaberMarkupLanguage": "^1.6.0",
         "SiraUtil": "^3.0.0"
     },
+    "loadAfter": ["ScoreSaber"],
     "links": {
         "project-source": "https://github.com/rithik-b/LeaderboardCore"
     }

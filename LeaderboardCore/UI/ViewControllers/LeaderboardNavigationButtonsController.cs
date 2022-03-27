@@ -5,6 +5,7 @@ using LeaderboardCore.Interfaces;
 using LeaderboardCore.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -18,7 +19,7 @@ namespace LeaderboardCore.UI.ViewControllers
         private readonly PlatformLeaderboardViewController platformLeaderboardViewController = null!;
 
         [InjectOptional] 
-        private readonly ScoreSaberCustomLeaderboard scoreSaberCustomLeaderboard;
+        private readonly ScoreSaberCustomLeaderboard scoreSaberCustomLeaderboard = null!;
         
         private FloatingScreen buttonsFloatingScreen;
         private FloatingScreen customPanelFloatingScreen;
@@ -122,6 +123,10 @@ namespace LeaderboardCore.UI.ViewControllers
                 currentIndex = lastLeaderboardIndex + 1;
                 YeetDefault();
             }
+            else if (currentIndex == 0 && !ShowDefaultLeaderboard)
+            {
+                RightButtonClick();
+            }
 
             NotifyPropertyChanged(nameof(LeftButtonActive));
             NotifyPropertyChanged(nameof(RightButtonActive));
@@ -133,7 +138,6 @@ namespace LeaderboardCore.UI.ViewControllers
             {
                 containerTransform.localPosition = new Vector3(-999, -999);
             }
-
             scoreSaberCustomLeaderboard?.YeetSS();
         }
 
@@ -143,7 +147,6 @@ namespace LeaderboardCore.UI.ViewControllers
             {
                 containerTransform.localPosition = containerPosition;
             }
-
             scoreSaberCustomLeaderboard?.UnYeetSS();
         }
 
@@ -190,6 +193,9 @@ namespace LeaderboardCore.UI.ViewControllers
 
         public void OnLeaderboardsChanged(List<CustomLeaderboard> customLeaderboards)
         {
+            this.customLeaderboards.Clear(); 
+            this.customLeaderboards.AddRange(customLeaderboards);
+            
             var lastLeaderboardIndex = customLeaderboards.IndexOf(lastLeaderboard);
 
             if (lastLeaderboard != null && lastLeaderboardIndex == -1 && currentIndex != 0)
@@ -204,17 +210,21 @@ namespace LeaderboardCore.UI.ViewControllers
                 currentIndex = lastLeaderboardIndex + 1;
                 YeetDefault();
             }
+            else if (currentIndex == 0 && !ShowDefaultLeaderboard)
+            {
+                RightButtonClick();
+            }
 
-            this.customLeaderboards.Clear(); 
-            this.customLeaderboards.AddRange(customLeaderboards);
             NotifyPropertyChanged(nameof(LeftButtonActive));
             NotifyPropertyChanged(nameof(RightButtonActive));
         }
 
         [UIValue("left-button-active")]
-        private bool LeftButtonActive => currentIndex > 0 && leaderboardLoaded && selectedLevel is CustomPreviewBeatmapLevel;
+        private bool LeftButtonActive => (currentIndex > 0 && (ShowDefaultLeaderboard || currentIndex > 1 )) && leaderboardLoaded && selectedLevel is CustomPreviewBeatmapLevel;
 
         [UIValue("right-button-active")]
         private bool RightButtonActive => currentIndex < customLeaderboards?.Count && leaderboardLoaded && selectedLevel is CustomPreviewBeatmapLevel;
+        
+        private bool ShowDefaultLeaderboard => scoreSaberCustomLeaderboard != null || !(selectedLevel is CustomPreviewBeatmapLevel) || customLeaderboards.Count == 0;
     }
 }

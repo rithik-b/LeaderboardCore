@@ -19,7 +19,7 @@ namespace LeaderboardCore
 
         internal static Plugin Instance { get; set; }
         internal static IPALogger Log { get; private set; }
-        internal readonly PluginMetadata scoreSaber;
+        internal PluginMetadata scoreSaber;
 
         /// <summary>
         /// Called when the plugin is first loaded by IPA (either when the game starts or when the plugin is enabled if it starts disabled).
@@ -32,10 +32,6 @@ namespace LeaderboardCore
             Instance = this;
             Log = logger;
             zenjector.Install<LeaderboardCoreMenuInstaller>(Location.Menu);
-
-            scoreSaber = PluginManager.GetPluginFromId("ScoreSaber");
-            // Since we only harmony patch on enable/disable, ScoreSaber is harmony patched regardless as long as it exists
-            scoreSaber ??= PluginManager.GetDisabledPluginFromId("ScoreSaber");
         }
 
 
@@ -47,6 +43,10 @@ namespace LeaderboardCore
         [OnEnable]
         public void OnEnable()
         {
+            scoreSaber = PluginManager.GetPluginFromId("ScoreSaber");
+            // Since we only harmony patch on enable/disable, ScoreSaber is harmony patched regardless as long as it exists
+            scoreSaber ??= PluginManager.GetDisabledPluginFromId("ScoreSaber");
+            
             if (scoreSaber != null)
             {
                 ApplyHarmonyPatches();

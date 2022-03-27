@@ -4,7 +4,7 @@ using Zenject;
 
 namespace LeaderboardCore.Models
 {
-    internal class ScoreSaberCustomLeaderboard :  INotifyLeaderboardActivate
+    internal class ScoreSaberCustomLeaderboard :  INotifyScoreSaberActivate
     {
         [Inject]
         private readonly PlatformLeaderboardViewController platformLeaderboardViewController = null!;
@@ -15,7 +15,7 @@ namespace LeaderboardCore.Models
         private Transform ssPanelScreenTransform;
         private Vector3 ssPanelScreenPosition;
         
-        public void OnLeaderboardActivated()
+        public void OnScoreSaberActivated()
         {
             if (ssLeaderboardElementsTransform == null)
             {

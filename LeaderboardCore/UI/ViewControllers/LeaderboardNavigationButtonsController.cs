@@ -12,7 +12,7 @@ namespace LeaderboardCore.UI.ViewControllers
 {
     [HotReload(RelativePathToLayout = @"..\Views\LeaderboardNavigationButtons.bsml")]
     [ViewDefinition("LeaderboardCore.UI.Views.LeaderboardNavigationButtons.bsml")]
-    internal class LeaderboardNavigationButtonsController : BSMLAutomaticViewController, IInitializable, IDisposable, INotifyLeaderboardSet, INotifyLeaderboardActivate, INotifyLeaderboardLoad, INotifyCustomLeaderboardsChange
+    internal class LeaderboardNavigationButtonsController : BSMLAutomaticViewController, IInitializable, IDisposable, INotifyLeaderboardSet, INotifyScoreSaberActivate, INotifyLeaderboardLoad, INotifyCustomLeaderboardsChange
     {
         [Inject] 
         private readonly PlatformLeaderboardViewController platformLeaderboardViewController = null!;
@@ -91,7 +91,7 @@ namespace LeaderboardCore.UI.ViewControllers
             buttonsFloatingScreen.SetRootViewController(this, AnimationType.None);
         }
         
-        public void OnLeaderboardActivated() => OnLeaderboardLoaded(true);
+        public void OnScoreSaberActivated() => OnLeaderboardLoaded(true);
 
         public void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
         {

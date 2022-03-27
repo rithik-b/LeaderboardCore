@@ -211,6 +211,18 @@
             Set this to change the background color of the panel.
             </summary>
         </member>
+        <member name="T:LeaderboardCore.Plugin">
+            <summary>
+            The LeaderboardCore plugin
+            </summary>
+        </member>
+        <member name="M:LeaderboardCore.Plugin.#ctor(IPA.Logging.Logger,SiraUtil.Zenject.Zenjector)">
+            <summary>
+            Called when the plugin is first loaded by IPA (either when the game starts or when the plugin is enabled if it starts disabled).
+            [Init] methods that use a Constructor or called before regular methods like InitWithConfig.
+            Only use [Init] with one Constructor.
+            </summary>
+        </member>
         <member name="M:LeaderboardCore.Plugin.OnEnable">
             <summary>
             Called when the plugin is enabled (including when the game starts if the plugin is enabled).

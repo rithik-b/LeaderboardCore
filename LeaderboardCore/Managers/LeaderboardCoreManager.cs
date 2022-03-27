@@ -8,14 +8,14 @@ namespace LeaderboardCore.Managers
 {
     internal class LeaderboardCoreManager : IInitializable, IDisposable
     {
-        private readonly List<INotifyLeaderboardActivate> notifyLeaderboardActivates;
+        private readonly List<INotifyScoreSaberActivate> notifyScoreSaberActivates;
         private readonly List<INotifyLeaderboardLoad> notifyLeaderboardLoads;
         private readonly List<INotifyScoreUpload> notifyScoreUploads;
 
-        public LeaderboardCoreManager(List<INotifyLeaderboardActivate> notifyLeaderboardActivates,
+        public LeaderboardCoreManager(List<INotifyScoreSaberActivate> notifyScoreSaberActivates,
             List<INotifyLeaderboardLoad> notifyLeaderboardLoads, List<INotifyScoreUpload> notifyScoreUploads)
         {
-            this.notifyLeaderboardActivates = notifyLeaderboardActivates;
+            this.notifyScoreSaberActivates = notifyScoreSaberActivates;
             this.notifyLeaderboardLoads = notifyLeaderboardLoads;
             this.notifyScoreUploads = notifyScoreUploads;
         }
@@ -36,9 +36,9 @@ namespace LeaderboardCore.Managers
 
         private void LeaderboardActivated()
         {
-            foreach (var notifyLeaderboardActivate in notifyLeaderboardActivates)
+            foreach (var notifyScoreSaberActivate in notifyScoreSaberActivates)
             {
-                notifyLeaderboardActivate.OnLeaderboardActivated();
+                notifyScoreSaberActivate.OnScoreSaberActivated();
             }
         }
 

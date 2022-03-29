@@ -1,7 +1,7 @@
 ﻿namespace LeaderboardCore.Interfaces
 {
-    internal interface INotifyLeaderboardActivate
+    internal interface INotifyScoreSaberActivate
     {
-        public void OnLeaderboardActivated();
+        public void OnScoreSaberActivated();
     }
 }

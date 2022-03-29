@@ -5,6 +5,7 @@ using LeaderboardCore.Interfaces;
 using LeaderboardCore.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -12,65 +13,86 @@ namespace LeaderboardCore.UI.ViewControllers
 {
     [HotReload(RelativePathToLayout = @"..\Views\LeaderboardNavigationButtons.bsml")]
     [ViewDefinition("LeaderboardCore.UI.Views.LeaderboardNavigationButtons.bsml")]
-    internal class LeaderboardNavigationButtonsController : BSMLAutomaticViewController, IInitializable, IDisposable, INotifyLeaderboardSet, INotifyLeaderboardActivate, INotifyLeaderboardLoad, INotifyCustomLeaderboardsChange
+    internal class LeaderboardNavigationButtonsController : BSMLAutomaticViewController, IInitializable, IDisposable, INotifyLeaderboardSet, INotifyScoreSaberActivate, INotifyLeaderboardLoad, INotifyCustomLeaderboardsChange
     {
-        private PlatformLeaderboardViewController platformLeaderboardViewController;
+        [Inject] 
+        private readonly PlatformLeaderboardViewController platformLeaderboardViewController = null!;
+
+        [InjectOptional] 
+        private readonly ScoreSaberCustomLeaderboard scoreSaberCustomLeaderboard = null!;
+        
         private FloatingScreen buttonsFloatingScreen;
         private FloatingScreen customPanelFloatingScreen;
 
-        private bool leaderboardLoaded = false;
-        private IPreviewBeatmapLevel selectedLevel;
-
-        private List<CustomLeaderboard> customLeaderboards;
-        private int currentIndex = 0;
-        private CustomLeaderboard lastLeaderboard;
-
         private Transform containerTransform;
         private Vector3 containerPosition;
+        
+        private bool leaderboardLoaded;
+        private IPreviewBeatmapLevel selectedLevel;
 
-        private Transform ssLeaderboardElementsTransform;
-        private Vector3 ssLeaderboardElementsPosition;
-
-        private Transform ssPanelScreenTransform;
-        private Vector3 ssPanelScreenPosition;
-
-        [Inject]
-        public void Construct(PlatformLeaderboardViewController platformLeaderboardViewController)
-        {
-            this.platformLeaderboardViewController = platformLeaderboardViewController;
-        }
+        private readonly List<CustomLeaderboard> customLeaderboards = new List<CustomLeaderboard>();
+        private int currentIndex;
+        private CustomLeaderboard lastLeaderboard;
 
         public void Initialize()
         {
             buttonsFloatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(120f, 25f), false, Vector3.zero, Quaternion.identity);
-            buttonsFloatingScreen.transform.SetParent(platformLeaderboardViewController.transform);
-            buttonsFloatingScreen.transform.localPosition = new Vector3(3f, 50f);
-            buttonsFloatingScreen.transform.localScale = Vector3.one;
-            buttonsFloatingScreen.gameObject.SetActive(false);
-            buttonsFloatingScreen.gameObject.SetActive(true);
-            buttonsFloatingScreen.gameObject.name = "LeaderboardNavigationButtonsPanel";
+            
+            var buttonsFloatingScreenTransform = buttonsFloatingScreen.transform;
+            buttonsFloatingScreenTransform.SetParent(platformLeaderboardViewController.transform);
+            buttonsFloatingScreenTransform.localPosition = new Vector3(3f, 50f);
+            buttonsFloatingScreenTransform.localScale = Vector3.one;
+
+            var buttonsFloatingScreenGO = buttonsFloatingScreen.gameObject;
+            buttonsFloatingScreenGO.SetActive(false);
+            buttonsFloatingScreenGO.SetActive(true);
+            buttonsFloatingScreenGO.name = "LeaderboardNavigationButtonsPanel";
+            
 
             customPanelFloatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(100f, 25f), false, Vector3.zero, Quaternion.identity);
-            customPanelFloatingScreen.transform.SetParent(platformLeaderboardViewController.transform);
-            customPanelFloatingScreen.transform.localPosition = new Vector3(3f, 50f);
-            customPanelFloatingScreen.transform.localScale = Vector3.one;
-            customPanelFloatingScreen.gameObject.SetActive(false);
-            customPanelFloatingScreen.gameObject.SetActive(true);
-            customPanelFloatingScreen.gameObject.name = "CustomLeaderboardPanel";
+
+            var customFloatingScreenTransform = customPanelFloatingScreen.transform;
+            customFloatingScreenTransform.SetParent(platformLeaderboardViewController.transform);
+            customFloatingScreenTransform.localPosition = new Vector3(3f, 50f);
+            customFloatingScreenTransform.localScale = Vector3.one;
+
+            var customFloatingScreenGO = customPanelFloatingScreen.gameObject;
+            customFloatingScreenGO.SetActive(false);
+            customFloatingScreenGO.SetActive(true);
+            customFloatingScreenGO.name = "CustomLeaderboardPanel";
+            
+            platformLeaderboardViewController.didActivateEvent += OnLeaderboardActivated;
         }
 
         public void Dispose()
         {
             if (buttonsFloatingScreen != null && buttonsFloatingScreen.gameObject != null)
             {
-                GameObject.Destroy(buttonsFloatingScreen.gameObject);
+                Destroy(buttonsFloatingScreen.gameObject);
             }
+            
+            platformLeaderboardViewController.didActivateEvent -= OnLeaderboardActivated;
         }
 
         public void OnEnable()
         {
             OnLeaderboardLoaded(leaderboardLoaded);
+            
+            if (containerTransform == null)
+            {
+                containerTransform = platformLeaderboardViewController.transform.Find("Container");
+                containerPosition = containerTransform.localPosition;
+                OnLeaderboardLoaded(true);
+            }
         }
+        
+        private void OnLeaderboardActivated(bool firstactivation, bool addedtohierarchy, bool screensystemenabling)
+        {
+            platformLeaderboardViewController.didActivateEvent -= OnLeaderboardActivated;
+            buttonsFloatingScreen.SetRootViewController(this, AnimationType.None);
+        }
+        
+        public void OnScoreSaberActivated() => OnLeaderboardLoaded(true);
 
         public void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
         {
@@ -81,35 +103,10 @@ namespace LeaderboardCore.UI.ViewControllers
             }
         }
 
-        public void OnLeaderboardActivated()
-        {
-            if (containerTransform == null)
-            {
-                containerTransform = platformLeaderboardViewController.transform.Find("Container");
-                containerPosition = containerTransform.localPosition;
-            }
-
-            if (ssLeaderboardElementsTransform == null)
-            {
-                ssLeaderboardElementsTransform = platformLeaderboardViewController.transform.Find("ScoreSaberLeaderboardElements");
-                ssLeaderboardElementsPosition = ssLeaderboardElementsTransform.localPosition;
-            }
-
-
-            if (ssPanelScreenTransform == null)
-            {
-                ssPanelScreenTransform = platformLeaderboardViewController.transform.Find("ScoreSaberPanelScreen");
-                ssPanelScreenPosition = ssPanelScreenTransform.localPosition;
-            }
-
-            buttonsFloatingScreen.SetRootViewController(this, AnimationType.None);
-            OnLeaderboardLoaded(true);
-        }
-
         public void OnLeaderboardLoaded(bool loaded)
         {
             leaderboardLoaded = loaded;
-            int lastLeaderboardIndex = customLeaderboards == null ? -1 : customLeaderboards.IndexOf(lastLeaderboard);
+            var lastLeaderboardIndex = customLeaderboards.IndexOf(lastLeaderboard);
 
             if (!loaded || selectedLevel == null || !(selectedLevel is CustomPreviewBeatmapLevel))
             {
@@ -117,38 +114,40 @@ namespace LeaderboardCore.UI.ViewControllers
                 {
                     lastLeaderboard.Hide(customPanelFloatingScreen);
                     currentIndex = 0;
-                    UnYeetSS();
+                    UnYeetDefault();
                 }
             }
-            else if (loaded && lastLeaderboard != null && lastLeaderboardIndex != -1 && currentIndex == 0)
+            else if (lastLeaderboard != null && lastLeaderboardIndex != -1 && currentIndex == 0)
             {
                 lastLeaderboard.Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
                 currentIndex = lastLeaderboardIndex + 1;
-                YeetSS();
+                YeetDefault();
+            }
+            else if (currentIndex == 0 && !ShowDefaultLeaderboard)
+            {
+                RightButtonClick();
             }
 
             NotifyPropertyChanged(nameof(LeftButtonActive));
             NotifyPropertyChanged(nameof(RightButtonActive));
         }
 
-        private void YeetSS()
+        private void YeetDefault()
         {
-            if (containerTransform != null && ssLeaderboardElementsTransform != null && ssPanelScreenTransform != null)
+            if (containerTransform != null)
             {
                 containerTransform.localPosition = new Vector3(-999, -999);
-                ssLeaderboardElementsTransform.localPosition = new Vector3(-999, -999);
-                ssPanelScreenTransform.localPosition = new Vector3(-999, -999);
             }
+            scoreSaberCustomLeaderboard?.YeetSS();
         }
 
-        private void UnYeetSS()
+        private void UnYeetDefault()
         {
-            if (containerTransform != null && ssLeaderboardElementsTransform != null && ssPanelScreenTransform != null)
+            if (containerTransform != null)
             {
                 containerTransform.localPosition = containerPosition;
-                ssLeaderboardElementsTransform.localPosition = ssLeaderboardElementsPosition;
-                ssPanelScreenTransform.localPosition = ssPanelScreenPosition;
             }
+            scoreSaberCustomLeaderboard?.UnYeetSS();
         }
 
         [UIAction("left-button-click")]
@@ -159,7 +158,7 @@ namespace LeaderboardCore.UI.ViewControllers
 
             if (currentIndex == 0)
             {
-                UnYeetSS();
+                UnYeetDefault();
                 lastLeaderboard = null;
             }
             else
@@ -177,7 +176,7 @@ namespace LeaderboardCore.UI.ViewControllers
         {
             if (currentIndex == 0)
             {
-                YeetSS();
+                YeetDefault();
             }
             else
             {
@@ -194,30 +193,38 @@ namespace LeaderboardCore.UI.ViewControllers
 
         public void OnLeaderboardsChanged(List<CustomLeaderboard> customLeaderboards)
         {
-            int lastLeaderboardIndex = customLeaderboards.IndexOf(lastLeaderboard);
+            this.customLeaderboards.Clear(); 
+            this.customLeaderboards.AddRange(customLeaderboards);
+            
+            var lastLeaderboardIndex = customLeaderboards.IndexOf(lastLeaderboard);
 
             if (lastLeaderboard != null && lastLeaderboardIndex == -1 && currentIndex != 0)
             {
                 lastLeaderboard.Hide(customPanelFloatingScreen);
                 currentIndex = 0;
-                UnYeetSS();
+                UnYeetDefault();
             }
             else if (lastLeaderboard != null && lastLeaderboardIndex != -1 && currentIndex == 0)
             {
                 lastLeaderboard.Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
                 currentIndex = lastLeaderboardIndex + 1;
-                YeetSS();
+                YeetDefault();
+            }
+            else if (currentIndex == 0 && !ShowDefaultLeaderboard)
+            {
+                RightButtonClick();
             }
 
-            this.customLeaderboards = customLeaderboards;
             NotifyPropertyChanged(nameof(LeftButtonActive));
             NotifyPropertyChanged(nameof(RightButtonActive));
         }
 
         [UIValue("left-button-active")]
-        private bool LeftButtonActive => currentIndex > 0 && (leaderboardLoaded && selectedLevel != null && selectedLevel is CustomPreviewBeatmapLevel);
+        private bool LeftButtonActive => (currentIndex > 0 && (ShowDefaultLeaderboard || currentIndex > 1 )) && leaderboardLoaded && selectedLevel is CustomPreviewBeatmapLevel;
 
         [UIValue("right-button-active")]
-        private bool RightButtonActive => currentIndex < customLeaderboards?.Count && (leaderboardLoaded && selectedLevel != null && selectedLevel is CustomPreviewBeatmapLevel);
+        private bool RightButtonActive => currentIndex < customLeaderboards?.Count && leaderboardLoaded && selectedLevel is CustomPreviewBeatmapLevel;
+        
+        private bool ShowDefaultLeaderboard => scoreSaberCustomLeaderboard != null || !(selectedLevel is CustomPreviewBeatmapLevel) || customLeaderboards.Count == 0;
     }
 }

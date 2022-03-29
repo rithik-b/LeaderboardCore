@@ -1,6 +1,5 @@
 ﻿using BeatSaberMarkupLanguage;
 using BeatSaberMarkupLanguage.Attributes;
-using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.ViewControllers;
 using HMUI;
 using IPA.Utilities;
@@ -116,7 +115,7 @@ namespace LeaderboardCore.Models.UI.ViewControllers
         [UIAction("cell-selected")]
         protected void OnSelectCell(SegmentedControl segmentedControl, int index)
         {
-            LeaderboardScope scope = (LeaderboardScope) (index + (useAroundPlayer ? 0 : 1));
+            var scope = (LeaderboardScope) (index + (useAroundPlayer ? 0 : 1));
             didSelectLeaderboardScopeEvent?.Invoke(scope);
         }
         #endregion

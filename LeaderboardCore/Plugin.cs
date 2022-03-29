@@ -3,29 +3,34 @@ using LeaderboardCore.Installers;
 using SiraUtil.Zenject;
 using System;
 using System.Reflection;
+using IPA.Loader;
 using IPALogger = IPA.Logging.Logger;
 
 namespace LeaderboardCore
 {
+    /// <summary>
+    /// The LeaderboardCore plugin
+    /// </summary>
     [Plugin(RuntimeOptions.DynamicInit)]
     public class Plugin
     {
-        public const string HarmonyId = "com.github.rithik-b.LeaderboardCore";
-        internal static readonly HarmonyLib.Harmony harmony = new HarmonyLib.Harmony(HarmonyId);
+        private const string kHarmonyID = "com.github.rithik-b.LeaderboardCore";
+        private static readonly HarmonyLib.Harmony harmony = new HarmonyLib.Harmony(kHarmonyID);
 
-        internal static Plugin Instance { get; private set; }
+        internal static Plugin Instance { get; set; }
         internal static IPALogger Log { get; private set; }
+        internal PluginMetadata scoreSaber;
 
-        [Init]
         /// <summary>
         /// Called when the plugin is first loaded by IPA (either when the game starts or when the plugin is enabled if it starts disabled).
         /// [Init] methods that use a Constructor or called before regular methods like InitWithConfig.
         /// Only use [Init] with one Constructor.
         /// </summary>
+        [Init]
         public Plugin(IPALogger logger, Zenjector zenjector)
         {
             Instance = this;
-            Plugin.Log = logger;
+            Log = logger;
             zenjector.Install<LeaderboardCoreMenuInstaller>(Location.Menu);
         }
 
@@ -38,7 +43,14 @@ namespace LeaderboardCore
         [OnEnable]
         public void OnEnable()
         {
-            ApplyHarmonyPatches();
+            scoreSaber = PluginManager.GetPluginFromId("ScoreSaber");
+            // Since we only harmony patch on enable/disable, ScoreSaber is harmony patched regardless as long as it exists
+            scoreSaber ??= PluginManager.GetDisabledPluginFromId("ScoreSaber");
+            
+            if (scoreSaber != null)
+            {
+                ApplyHarmonyPatches();
+            }
         }
 
         /// <summary>
@@ -49,45 +61,36 @@ namespace LeaderboardCore
         [OnDisable]
         public void OnDisable()
         {
-            RemoveHarmonyPatches();
+            if (scoreSaber != null)
+            {
+                RemoveHarmonyPatches();
+            }
         }
-
-        /*
-        /// <summary>
-        /// Called when the plugin is disabled and on Beat Saber quit.
-        /// Return Task for when the plugin needs to do some long-running, asynchronous work to disable.
-        /// [OnDisable] methods that return Task are called after all [OnDisable] methods that return void.
-        /// </summary>
-        [OnDisable]
-        public async Task OnDisableAsync()
-        {
-            await LongRunningUnloadTask().ConfigureAwait(false);
-        }
-        */
+        
         #endregion
 
         #region Harmony
         /// <summary>
         /// Attempts to apply all the Harmony patches in this assembly.
         /// </summary>
-        internal static void ApplyHarmonyPatches()
+        private static void ApplyHarmonyPatches()
         {
             try
             {
-                Plugin.Log?.Debug("Applying Harmony patches.");
+                Log?.Debug("Applying Harmony patches.");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error("Error applying Harmony patches: " + ex.Message);
-                Plugin.Log?.Debug(ex);
+                Log?.Error("Error applying Harmony patches: " + ex.Message);
+                Log?.Debug(ex);
             }
         }
 
         /// <summary>
         /// Attempts to remove all the Harmony patches that used our HarmonyId.
         /// </summary>
-        internal static void RemoveHarmonyPatches()
+        private static void RemoveHarmonyPatches()
         {
             try
             {
@@ -95,8 +98,8 @@ namespace LeaderboardCore
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error("Error removing Harmony patches: " + ex.Message);
-                Plugin.Log?.Debug(ex);
+                Log?.Error("Error removing Harmony patches: " + ex.Message);
+                Log?.Debug(ex);
             }
         }
         #endregion

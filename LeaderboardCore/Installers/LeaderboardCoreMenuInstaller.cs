@@ -1,7 +1,9 @@
-﻿using LeaderboardCore.UI.ViewControllers;
+﻿using IPA.Loader;
+using LeaderboardCore.AffinityPatches;
+using LeaderboardCore.UI.ViewControllers;
 using Zenject;
-using SiraUtil;
 using LeaderboardCore.Managers;
+using LeaderboardCore.Models;
 
 namespace LeaderboardCore.Installers
 {
@@ -12,6 +14,13 @@ namespace LeaderboardCore.Installers
             Container.BindInterfacesAndSelfTo<LeaderboardNavigationButtonsController>().FromNewComponentAsViewController().AsSingle();
             Container.BindInterfacesTo<LeaderboardCoreManager>().AsSingle();
             Container.BindInterfacesAndSelfTo<CustomLeaderboardManager>().AsSingle();
+
+            if (PluginManager.GetPluginFromId("ScoreSaber") != null)
+            {
+                Container.BindInterfacesAndSelfTo<ScoreSaberCustomLeaderboard>().AsSingle();
+            }
+
+            Container.BindInterfacesTo<LeaderboardSetDataPatch>().AsSingle();
         }
     }
 }

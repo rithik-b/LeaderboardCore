@@ -28,6 +28,7 @@ namespace LeaderboardCore.UI.ViewControllers
         private Vector3 containerPosition;
         
         private bool leaderboardLoaded;
+        private IPreviewBeatmapLevel lastselectedLevel;
         private IPreviewBeatmapLevel selectedLevel;
 
         private readonly List<CustomLeaderboard> customLeaderboards = new List<CustomLeaderboard>();
@@ -96,6 +97,7 @@ namespace LeaderboardCore.UI.ViewControllers
 
         public void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
         {
+            lastselectedLevel = selectedLevel;
             selectedLevel = difficultyBeatmap.level;
             if (isActiveAndEnabled || selectedLevel is CustomPreviewBeatmapLevel)
             {
@@ -123,7 +125,7 @@ namespace LeaderboardCore.UI.ViewControllers
                 currentIndex = lastLeaderboardIndex + 1;
                 YeetDefault();
             }
-            else if (currentIndex == 0 && !ShowDefaultLeaderboard)
+            else if (currentIndex == 0 && !ShowDefaultLeaderboard && lastselectedLevel == null)
             {
                 RightButtonClick();
             }
@@ -220,10 +222,10 @@ namespace LeaderboardCore.UI.ViewControllers
         }
 
         [UIValue("left-button-active")]
-        private bool LeftButtonActive => (currentIndex > 0 && (ShowDefaultLeaderboard || currentIndex > 1 )) && leaderboardLoaded && selectedLevel is CustomPreviewBeatmapLevel;
+        private bool LeftButtonActive => (currentIndex > 1 && leaderboardLoaded && !ShowDefaultLeaderboard) || (ShowDefaultLeaderboard && currentIndex == 1);
 
         [UIValue("right-button-active")]
-        private bool RightButtonActive => currentIndex < customLeaderboards?.Count && leaderboardLoaded && selectedLevel is CustomPreviewBeatmapLevel;
+        private bool RightButtonActive => currentIndex < customLeaderboards?.Count && leaderboardLoaded;
         
         private bool ShowDefaultLeaderboard => scoreSaberCustomLeaderboard != null || !(selectedLevel is CustomPreviewBeatmapLevel) || customLeaderboards.Count == 0;
     }

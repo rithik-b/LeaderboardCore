@@ -1,4 +1,5 @@
-﻿using BeatSaberMarkupLanguage.FloatingScreen;
+﻿using System.Collections;
+using BeatSaberMarkupLanguage.FloatingScreen;
 using HMUI;
 using UnityEngine;
 
@@ -21,6 +22,15 @@ namespace LeaderboardCore.Models
 
         internal void Show(FloatingScreen panelScreen, Vector3 leaderboardPosition, PlatformLeaderboardViewController platformLeaderboardViewController)
         {
+            panelScreen.gameObject.SetActive(true);
+            
+            if (!panelScreen.isActiveAndEnabled)
+            {
+                SharedCoroutineStarter.instance.StartCoroutine(WaitForScreen(panelScreen, leaderboardPosition,
+                    platformLeaderboardViewController));
+                return;
+            }
+            
             if (panelViewController != null)
             {
                 panelScreen.SetRootViewController(panelViewController, ViewController.AnimationType.None);
@@ -46,6 +56,16 @@ namespace LeaderboardCore.Models
                 leaderboardViewController.__Activate(false, false);
                 leaderboardViewController.transform.SetParent(platformLeaderboardViewController.transform);
             }
+        }
+        
+        private IEnumerator WaitForScreen(FloatingScreen panelScreen, Vector3 leaderboardPosition,
+            PlatformLeaderboardViewController platformLeaderboardViewController)
+        {
+            while (!panelScreen.isActiveAndEnabled)
+            {
+                yield return null;
+            }
+            Show(panelScreen, leaderboardPosition, platformLeaderboardViewController);
         }
 
         internal void Hide(FloatingScreen panelScreen)

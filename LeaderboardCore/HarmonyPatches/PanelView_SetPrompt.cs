@@ -10,7 +10,7 @@ namespace LeaderboardCore.HarmonyPatches
     {
 		public static event Action ScoreUploaded;
 		private static MethodBase TargetMethod() => 
-			Plugin.Instance.scoreSaber.Assembly.GetType("ScoreSaber.UI.ViewControllers.PanelView").GetMethod("SetPrompt", BindingFlags.Instance | BindingFlags.Public);
+			Plugin.Instance.scoreSaber.Assembly.GetType("ScoreSaber.UI.Leaderboard.PanelView").GetMethod("SetPrompt", BindingFlags.Instance | BindingFlags.Public);
 
 		private static void Postfix(ref CurvedTextMeshPro ____promptText)
 		{

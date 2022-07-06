@@ -9,7 +9,7 @@ namespace LeaderboardCore.HarmonyPatches
     {
 		public static event Action<bool> IsLoadedChanged;
 		private static MethodBase TargetMethod() => 
-			Plugin.Instance.scoreSaber.Assembly.GetType("ScoreSaber.UI.ViewControllers.PanelView").GetMethod("set_isLoaded", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField);
+			Plugin.Instance.scoreSaber.Assembly.GetType("ScoreSaber.UI.Leaderboard.PanelView").GetMethod("set_isLoaded", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField);
 
 		private static void Postfix(bool ____isLoaded)
         {

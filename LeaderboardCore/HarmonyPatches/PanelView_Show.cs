@@ -9,7 +9,7 @@ namespace LeaderboardCore.HarmonyPatches
     {
 		public static event Action ViewActivated;
 		private static MethodBase TargetMethod() => 
-			Plugin.Instance.scoreSaber.Assembly.GetType("ScoreSaber.UI.ViewControllers.PanelView").GetMethod("Show", BindingFlags.Instance | BindingFlags.Public);
+			Plugin.Instance.scoreSaber.Assembly.GetType("ScoreSaber.UI.Leaderboard.PanelView").GetMethod("Show", BindingFlags.Instance | BindingFlags.Public);
 
 		private static void Postfix()
 		{

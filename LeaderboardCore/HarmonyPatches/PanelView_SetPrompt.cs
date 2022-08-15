@@ -14,10 +14,10 @@ namespace LeaderboardCore.HarmonyPatches
 
 		private static void Postfix(ref CurvedTextMeshPro ____promptText)
 		{
-			if (____promptText.text.Contains("Score uploaded"))
-            {
-				ScoreUploaded?.Invoke();
-            }
+			if (____promptText == null || !____promptText.text.Contains("Score uploaded"))
+				return;
+
+			ScoreUploaded?.Invoke();
 		}
 	}
 }

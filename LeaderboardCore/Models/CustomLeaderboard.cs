@@ -19,6 +19,16 @@ namespace LeaderboardCore.Models
         /// The ViewController for the leaderboard itself.
         /// </summary>
         protected abstract ViewController leaderboardViewController { get; }
+        
+        /// <summary>
+        /// The ID for the leaderboard.
+        /// Must be a unique string if the mod has multiple leaderboards.
+        /// </summary>
+        protected virtual string leaderboardId { get; } = "";
+        
+        internal string pluginId;
+        
+        internal string LeaderboardId => $"{pluginId}{leaderboardId}";
 
         internal void Show(FloatingScreen panelScreen, Vector3 leaderboardPosition, PlatformLeaderboardViewController platformLeaderboardViewController)
         {

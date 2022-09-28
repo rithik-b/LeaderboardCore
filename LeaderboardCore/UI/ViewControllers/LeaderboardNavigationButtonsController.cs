@@ -6,6 +6,8 @@ using LeaderboardCore.Interfaces;
 using LeaderboardCore.Models;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using LeaderboardCore.Configuration;
 using UnityEngine;
 using Zenject;
 
@@ -17,6 +19,9 @@ namespace LeaderboardCore.UI.ViewControllers
     {
         [Inject] 
         private readonly PlatformLeaderboardViewController platformLeaderboardViewController = null!;
+        
+        [Inject]
+        private readonly PluginConfig pluginConfig = null!;
 
         [InjectOptional] 
         private readonly ScoreSaberCustomLeaderboard? scoreSaberCustomLeaderboard = null!;
@@ -30,10 +35,10 @@ namespace LeaderboardCore.UI.ViewControllers
         private bool leaderboardLoaded;
         private IPreviewBeatmapLevel? selectedLevel;
 
-        private readonly List<CustomLeaderboard> customLeaderboards = new List<CustomLeaderboard>();
+        private readonly List<CustomLeaderboard> orderedCustomLeaderboards = new List<CustomLeaderboard>();
+        private readonly Dictionary<string, CustomLeaderboard> customLeaderboardsById = new Dictionary<string, CustomLeaderboard>();
         private int currentIndex;
-        private CustomLeaderboard? lastLeaderboard;
-
+        
         public void Initialize()
         {
             buttonsFloatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(120f, 25f), false, Vector3.zero, Quaternion.identity);
@@ -102,7 +107,6 @@ namespace LeaderboardCore.UI.ViewControllers
         public void OnLeaderboardLoaded(bool loaded)
         {
             leaderboardLoaded = loaded;
-            var lastLeaderboardIndex = customLeaderboards.IndexOf(lastLeaderboard!);
 
             if (!(selectedLevel is CustomPreviewBeatmapLevel))
             {
@@ -111,11 +115,11 @@ namespace LeaderboardCore.UI.ViewControllers
             else
             {
                 // If not loaded or leaderboard removed
-                if (!loaded || (lastLeaderboard != null && lastLeaderboardIndex == -1 && currentIndex != 0))
+                if (!loaded || (pluginConfig.LastLeaderboard != null && !customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard) && currentIndex != 0))
                 {
                     SwitchToDefault();
                 }
-                else if (lastLeaderboard != null && lastLeaderboardIndex != -1 && currentIndex == 0)
+                else if (customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard ?? "") && currentIndex == 0)
                 {
                     SwitchToLastLeaderboard();
                 }
@@ -131,19 +135,22 @@ namespace LeaderboardCore.UI.ViewControllers
 
         private void SwitchToDefault()
         {
-            lastLeaderboard?.Hide(customPanelFloatingScreen);
+            if (customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard ?? "", out var lastLeaderboard))
+            {
+                lastLeaderboard.Hide(customPanelFloatingScreen);
+            }
             currentIndex = 0;
             UnYeetDefault();
         }
 
         private void SwitchToLastLeaderboard()
         {
-            if (lastLeaderboard != null)
+            if (customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard ?? "", out var lastLeaderboard))
             {
-                var lastLeaderboardIndex = customLeaderboards.IndexOf(lastLeaderboard);
+                var lastLeaderboardIndex = orderedCustomLeaderboards.IndexOf(lastLeaderboard);
                 lastLeaderboard.Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
                 currentIndex = lastLeaderboardIndex + 1;
-                YeetDefault();   
+                YeetDefault();             
             }
         }
 
@@ -168,22 +175,27 @@ namespace LeaderboardCore.UI.ViewControllers
         [UIAction("left-button-click")]
         private void LeftButtonClick()
         {
-            if (lastLeaderboard == null)
+            if (pluginConfig.LastLeaderboard == null)
             {
                 return;
             }
             
-            lastLeaderboard.Hide(customPanelFloatingScreen);
+            if (customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard, out var outLastLeaderboard))
+            {
+                outLastLeaderboard.Hide(customPanelFloatingScreen);
+            }
+            
             currentIndex--;
 
             if (currentIndex == 0)
             {
                 UnYeetDefault();
-                lastLeaderboard = null;
+                pluginConfig.LastLeaderboard = null;
             }
             else
             {
-                lastLeaderboard = customLeaderboards[currentIndex - 1];
+                var lastLeaderboard = orderedCustomLeaderboards[currentIndex - 1];
+                pluginConfig.LastLeaderboard = lastLeaderboard.LeaderboardId;
                 lastLeaderboard.Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
             }
 
@@ -198,31 +210,36 @@ namespace LeaderboardCore.UI.ViewControllers
             {
                 YeetDefault();
             }
-            else
+            else if (customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard ?? "", out var outLastLeaderboard))
             {
-                lastLeaderboard?.Hide(customPanelFloatingScreen);
+                outLastLeaderboard?.Hide(customPanelFloatingScreen);
             }
 
             currentIndex++;
-            lastLeaderboard = customLeaderboards[currentIndex - 1];
+            var lastLeaderboard = orderedCustomLeaderboards[currentIndex - 1];
+            pluginConfig.LastLeaderboard = lastLeaderboard.LeaderboardId;
             lastLeaderboard.Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
 
             NotifyPropertyChanged(nameof(LeftButtonActive));
             NotifyPropertyChanged(nameof(RightButtonActive));
         }
 
-        public void OnLeaderboardsChanged(List<CustomLeaderboard> customLeaderboards)
+        public void OnLeaderboardsChanged(IEnumerable<CustomLeaderboard> orderedCustomLeaderboards, Dictionary<string, CustomLeaderboard> customLeaderboardsById)
         {
-            this.customLeaderboards.Clear(); 
-            this.customLeaderboards.AddRange(customLeaderboards);
+            this.orderedCustomLeaderboards.Clear(); 
+            this.orderedCustomLeaderboards.AddRange(orderedCustomLeaderboards);
             
-            var lastLeaderboardIndex = customLeaderboards.IndexOf(lastLeaderboard!);
+            this.customLeaderboardsById.Clear();
+            foreach (var customLeaderboard in customLeaderboardsById)
+            {
+                this.customLeaderboardsById[customLeaderboard.Key] = customLeaderboard.Value;
+            }
 
-            if (lastLeaderboard != null && lastLeaderboardIndex == -1 && currentIndex != 0)
+            if (pluginConfig.LastLeaderboard != null && !customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard) && currentIndex != 0)
             {
                 SwitchToDefault();
             }
-            else if (lastLeaderboard != null && lastLeaderboardIndex != -1 && currentIndex == 0)
+            else if (customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard ?? "") && currentIndex == 0)
             {
                 SwitchToLastLeaderboard();
             }
@@ -239,8 +256,8 @@ namespace LeaderboardCore.UI.ViewControllers
         private bool LeftButtonActive => (currentIndex > 0 && (ShowDefaultLeaderboard || currentIndex > 1 )) && leaderboardLoaded && selectedLevel is CustomPreviewBeatmapLevel;
 
         [UIValue("right-button-active")]
-        private bool RightButtonActive => currentIndex < customLeaderboards.Count && leaderboardLoaded && selectedLevel is CustomPreviewBeatmapLevel;
+        private bool RightButtonActive => currentIndex < orderedCustomLeaderboards.Count && leaderboardLoaded && selectedLevel is CustomPreviewBeatmapLevel;
         
-        private bool ShowDefaultLeaderboard => scoreSaberCustomLeaderboard != null || !(selectedLevel is CustomPreviewBeatmapLevel) || customLeaderboards.Count == 0;
+        private bool ShowDefaultLeaderboard => scoreSaberCustomLeaderboard != null || !(selectedLevel is CustomPreviewBeatmapLevel) || orderedCustomLeaderboards.Count == 0;
     }
 }

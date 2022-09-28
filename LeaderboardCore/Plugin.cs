@@ -3,8 +3,11 @@ using LeaderboardCore.Installers;
 using SiraUtil.Zenject;
 using System;
 using System.Reflection;
+using IPA.Config.Stores;
 using IPA.Loader;
+using LeaderboardCore.Configuration;
 using IPALogger = IPA.Logging.Logger;
+using IPAConfig = IPA.Config.Config;
 
 namespace LeaderboardCore
 {
@@ -27,11 +30,11 @@ namespace LeaderboardCore
         /// Only use [Init] with one Constructor.
         /// </summary>
         [Init]
-        public Plugin(IPALogger logger, Zenjector zenjector)
+        public Plugin(IPALogger logger, Zenjector zenjector, IPAConfig config)
         {
             Instance = this;
             Log = logger;
-            zenjector.Install<LeaderboardCoreMenuInstaller>(Location.Menu);
+            zenjector.Install<LeaderboardCoreMenuInstaller>(Location.Menu, config.Generated<PluginConfig>());
         }
 
 

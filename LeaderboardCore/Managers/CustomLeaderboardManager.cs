@@ -1,6 +1,9 @@
 ﻿using LeaderboardCore.Interfaces;
 using LeaderboardCore.Models;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Reflection;
 
 namespace LeaderboardCore.Managers
 {
@@ -10,12 +13,12 @@ namespace LeaderboardCore.Managers
     public class CustomLeaderboardManager
     {
         private readonly List<INotifyCustomLeaderboardsChange> notifyCustomLeaderboardsChanges;
-        private readonly List<CustomLeaderboard> customLeaderboards;
+        private readonly Dictionary<string, CustomLeaderboard> customLeaderboardsById;
 
         internal CustomLeaderboardManager(List<INotifyCustomLeaderboardsChange> notifyCustomLeaderboardsChanges)
         {
             this.notifyCustomLeaderboardsChanges = notifyCustomLeaderboardsChanges;
-            customLeaderboards = new List<CustomLeaderboard>();
+            customLeaderboardsById = new Dictionary<string, CustomLeaderboard>();
         }
 
         /// <summary>
@@ -24,9 +27,14 @@ namespace LeaderboardCore.Managers
         /// </summary>
         public void Register(CustomLeaderboard customLeaderboard)
         {
-            if (!customLeaderboards.Contains(customLeaderboard))
+            if (customLeaderboard.pluginId == null)
             {
-                customLeaderboards.Add(customLeaderboard);
+                customLeaderboard.pluginId = Assembly.GetCallingAssembly().GetName().Name;
+            }
+            
+            if (!customLeaderboardsById.ContainsKey(customLeaderboard.LeaderboardId))
+            {
+                customLeaderboardsById[customLeaderboard.LeaderboardId] = customLeaderboard;
                 OnLeaderboardsChanged();
             }
         }
@@ -37,7 +45,7 @@ namespace LeaderboardCore.Managers
         /// </summary>
         public void Unregister(CustomLeaderboard customLeaderboard)
         {
-            customLeaderboards.Remove(customLeaderboard);
+            customLeaderboardsById.Remove(customLeaderboard.LeaderboardId);
             OnLeaderboardsChanged();
         }
 
@@ -45,7 +53,7 @@ namespace LeaderboardCore.Managers
         {
             foreach (var notifyCustomLeaderboardsChange in notifyCustomLeaderboardsChanges)
             {
-                notifyCustomLeaderboardsChange.OnLeaderboardsChanged(customLeaderboards);
+                notifyCustomLeaderboardsChange.OnLeaderboardsChanged(customLeaderboardsById.Values, customLeaderboardsById);
             }
         }
     }

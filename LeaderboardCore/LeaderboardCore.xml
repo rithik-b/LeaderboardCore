@@ -68,6 +68,12 @@
             The ViewController for the leaderboard itself.
             </summary>
         </member>
+        <member name="P:LeaderboardCore.Models.CustomLeaderboard.leaderboardId">
+            <summary>
+            The ID for the leaderboard.
+            Must be a unique string if the mod has multiple leaderboards.
+            </summary>
+        </member>
         <member name="T:LeaderboardCore.Models.UI.ViewControllers.BasicDoubleTextPanelViewController">
             <summary>
             Absract class for a <see cref="T:LeaderboardCore.Models.UI.ViewControllers.BasicPanelViewController"/> with both a top text and a bottom text on the right side (the same as what ScoreSaber has).
@@ -216,7 +222,7 @@
             The LeaderboardCore plugin
             </summary>
         </member>
-        <member name="M:LeaderboardCore.Plugin.#ctor(IPA.Logging.Logger,SiraUtil.Zenject.Zenjector)">
+        <member name="M:LeaderboardCore.Plugin.#ctor(IPA.Logging.Logger,SiraUtil.Zenject.Zenjector,IPA.Config.Config)">
             <summary>
             Called when the plugin is first loaded by IPA (either when the game starts or when the plugin is enabled if it starts disabled).
             [Init] methods that use a Constructor or called before regular methods like InitWithConfig.

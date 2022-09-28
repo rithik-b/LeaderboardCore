@@ -5,7 +5,7 @@ namespace LeaderboardCore.Interfaces
 {
     internal interface INotifyCustomLeaderboardsChange
     {
-        public void OnLeaderboardsChanged(List<CustomLeaderboard> customLeaderboards);
+        public void OnLeaderboardsChanged(IEnumerable<CustomLeaderboard> orderedCustomLeaderboards, Dictionary<string, CustomLeaderboard> customLeaderboardsById);
 
     }
 }

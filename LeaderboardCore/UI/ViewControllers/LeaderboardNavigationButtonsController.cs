@@ -133,12 +133,12 @@ namespace LeaderboardCore.UI.ViewControllers
             NotifyPropertyChanged(nameof(RightButtonActive));
         }
 
-        private void SwitchToDefault()
+        private void SwitchToDefault(CustomLeaderboard? lastLeaderboard = null)
         {
-            if (customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard ?? "", out var lastLeaderboard))
-            {
-                lastLeaderboard.Hide(customPanelFloatingScreen);
-            }
+            lastLeaderboard ??= customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard ?? "", out var outLastLeaderboard)
+                ? outLastLeaderboard
+                : null;
+            lastLeaderboard?.Hide(customPanelFloatingScreen);
             currentIndex = 0;
             UnYeetDefault();
         }
@@ -204,21 +204,26 @@ namespace LeaderboardCore.UI.ViewControllers
         }
 
         [UIAction("right-button-click")]
-        private void RightButtonClick()
+        private void RightButtonClick() => RightButtonClick(null);
+
+        private void RightButtonClick(CustomLeaderboard? lastLeaderboard)
         {
             if (currentIndex == 0)
             {
                 YeetDefault();
             }
-            else if (customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard ?? "", out var outLastLeaderboard))
+            else
             {
-                outLastLeaderboard?.Hide(customPanelFloatingScreen);
+                lastLeaderboard ??= customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard ?? "", out var outLastLeaderboard)
+                    ? outLastLeaderboard
+                    : null;
+                lastLeaderboard?.Hide(customPanelFloatingScreen);
             }
 
             currentIndex++;
-            var lastLeaderboard = orderedCustomLeaderboards[currentIndex - 1];
-            pluginConfig.LastLeaderboard = lastLeaderboard.LeaderboardId;
-            lastLeaderboard.Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
+            var currentLeaderboard = orderedCustomLeaderboards[currentIndex - 1];
+            pluginConfig.LastLeaderboard = currentLeaderboard.LeaderboardId;
+            currentLeaderboard.Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
 
             NotifyPropertyChanged(nameof(LeftButtonActive));
             NotifyPropertyChanged(nameof(RightButtonActive));
@@ -229,6 +234,10 @@ namespace LeaderboardCore.UI.ViewControllers
             this.orderedCustomLeaderboards.Clear(); 
             this.orderedCustomLeaderboards.AddRange(orderedCustomLeaderboards);
             
+            // I hate how this library is so scuffed and really hope scoresaber uses it instead of having to do this
+            // So this piece of scuffed code takes the last leaderboard if it was part of the current list and gives it for switching out
+            var lastLeaderboard = this.customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard ?? "", out var outLastLeaderboard) ? outLastLeaderboard : null;
+            
             this.customLeaderboardsById.Clear();
             foreach (var customLeaderboard in customLeaderboardsById)
             {
@@ -237,7 +246,7 @@ namespace LeaderboardCore.UI.ViewControllers
 
             if (pluginConfig.LastLeaderboard != null && !customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard) && currentIndex != 0)
             {
-                SwitchToDefault();
+                SwitchToDefault(lastLeaderboard);
             }
             else if (customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard ?? "") && currentIndex == 0)
             {
@@ -245,7 +254,7 @@ namespace LeaderboardCore.UI.ViewControllers
             }
             else if (currentIndex == 0 && !ShowDefaultLeaderboard)
             {
-                RightButtonClick();
+                RightButtonClick(lastLeaderboard);
             }
 
             NotifyPropertyChanged(nameof(LeftButtonActive));

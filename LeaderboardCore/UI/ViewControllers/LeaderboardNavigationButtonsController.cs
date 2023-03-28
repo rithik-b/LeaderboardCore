@@ -244,6 +244,11 @@ namespace LeaderboardCore.UI.ViewControllers
                 this.customLeaderboardsById[customLeaderboard.Key] = customLeaderboard.Value;
             }
 
+            if (!leaderboardLoaded)
+            {
+                return;
+            }
+            
             if (pluginConfig.LastLeaderboard != null && !customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard) && currentIndex != 0)
             {
                 SwitchToDefault(lastLeaderboard);

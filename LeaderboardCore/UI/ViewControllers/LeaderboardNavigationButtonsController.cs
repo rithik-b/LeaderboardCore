@@ -244,9 +244,17 @@ namespace LeaderboardCore.UI.ViewControllers
                 this.customLeaderboardsById[customLeaderboard.Key] = customLeaderboard.Value;
             }
 
-            if (pluginConfig.LastLeaderboard != null && !customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard) && currentIndex != 0)
+            if (!leaderboardLoaded)
+            {
+                NotifyPropertyChanged(nameof(LeftButtonActive));
+                NotifyPropertyChanged(nameof(RightButtonActive));
+                return;
+            }
+
+            if (ShowDefaultLeaderboard || (pluginConfig.LastLeaderboard != null && !customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard) && currentIndex != 0))
             {
                 SwitchToDefault(lastLeaderboard);
+                
                 if (!ShowDefaultLeaderboard && customLeaderboardsById.Count > 0)
                 {
                     RightButtonClick(lastLeaderboard);

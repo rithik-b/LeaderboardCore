@@ -19,6 +19,8 @@ namespace LeaderboardCore.Models
         /// The ViewController for the leaderboard itself.
         /// </summary>
         protected abstract ViewController leaderboardViewController { get; }
+
+        protected ICoroutineStarter coroutineStarter { get; set; }
         
         /// <summary>
         /// The ID for the leaderboard.
@@ -36,7 +38,7 @@ namespace LeaderboardCore.Models
             
             if (!panelScreen.isActiveAndEnabled)
             {
-                SharedCoroutineStarter.instance.StartCoroutine(WaitForScreen(panelScreen, leaderboardPosition,
+                coroutineStarter.StartCoroutine(WaitForScreen(panelScreen, leaderboardPosition,
                     platformLeaderboardViewController));
                 return;
             }

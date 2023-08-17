@@ -134,7 +134,11 @@
             Whether or not the "Around Player" <see cref="T:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.LeaderboardScope"/> is enabled.
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.useFriends" -->
+        <member name="P:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.useFriends">
+            <summary>
+            Whether or not the "Friends" <see cref="T:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.LeaderboardScope"/> is enabled.
+            </summary>
+        </member>
         <member name="M:LeaderboardCore.Models.UI.ViewControllers.BasicLeaderboardViewController.OnUpClicked">
             <summary>
             Called when the up arrow next to the leaderboard is clicked.

@@ -28,6 +28,11 @@ namespace LeaderboardCore.Installers
             {
                 Container.BindInterfacesAndSelfTo<ScoreSaberCustomLeaderboard>().AsSingle();
             }
+            else
+            {
+                // ScoreSaber already fixes multiplayer for us, so we don't need to do anything
+                Container.BindInterfacesTo<MultiplayerLeaderboardManager>().AsSingle();
+            }
 
             Container.BindInterfacesTo<LeaderboardSetDataPatch>().AsSingle();
         }

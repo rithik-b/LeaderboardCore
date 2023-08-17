@@ -51,7 +51,7 @@ namespace LeaderboardCore.Models.UI.ViewControllers
         /// </summary>
         protected virtual bool useAroundPlayer { get => true; }
 
-        // <summary>
+        /// <summary>
         /// Whether or not the "Friends" <see cref="LeaderboardScope"/> is enabled.
         /// </summary>
         protected virtual bool useFriends { get => false; }

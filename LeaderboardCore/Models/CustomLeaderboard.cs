@@ -93,7 +93,7 @@ namespace LeaderboardCore.Models
                 }
             }
 
-            if (leaderboardViewController != null)
+            if (leaderboardViewController != null && leaderboardViewController.isActivated)
             {
                 leaderboardViewController.__Deactivate(false, true, false);
             }

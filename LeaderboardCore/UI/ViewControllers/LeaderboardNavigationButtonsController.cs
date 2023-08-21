@@ -251,9 +251,6 @@ namespace LeaderboardCore.UI.ViewControllers
 
         public void OnLeaderboardsChanged(IEnumerable<CustomLeaderboard> orderedCustomLeaderboards, Dictionary<string, CustomLeaderboard> customLeaderboardsById)
         {
-            if (!leaderboardLoaded)
-                return;
-            
             this.orderedCustomLeaderboards.Clear(); 
             this.orderedCustomLeaderboards.AddRange(orderedCustomLeaderboards);
             
@@ -266,6 +263,9 @@ namespace LeaderboardCore.UI.ViewControllers
             {
                 this.customLeaderboardsById[customLeaderboard.Key] = customLeaderboard.Value;
             }
+            
+            if (!leaderboardLoaded)
+                return;
 
             // We only want to display the default leaderboard if there's no other custom leaderboards
             if (!(selectedLevel is CustomPreviewBeatmapLevel) || this.orderedCustomLeaderboards.Count == 0)

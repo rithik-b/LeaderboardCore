@@ -2,6 +2,7 @@
 using System.Collections;
 using BeatSaberMarkupLanguage.FloatingScreen;
 using HMUI;
+using LeaderboardCore.Utilities;
 using UnityEngine;
 
 namespace LeaderboardCore.Models
@@ -20,8 +21,6 @@ namespace LeaderboardCore.Models
         /// The ViewController for the leaderboard itself.
         /// </summary>
         protected abstract ViewController leaderboardViewController { get; }
-
-        protected ICoroutineStarter coroutineStarter { get; set; }
         
         /// <summary>
         /// The ID for the leaderboard.
@@ -39,7 +38,7 @@ namespace LeaderboardCore.Models
             
             if (!panelScreen.isActiveAndEnabled)
             {
-                coroutineStarter.StartCoroutine(WaitForScreen(panelScreen, leaderboardPosition,
+                SharedCoroutineStarter.Instance.StartCoroutine(WaitForScreen(panelScreen, leaderboardPosition,
                     platformLeaderboardViewController));
                 return;
             }

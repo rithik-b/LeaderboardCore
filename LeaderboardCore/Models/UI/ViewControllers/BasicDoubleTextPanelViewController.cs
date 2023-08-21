@@ -11,7 +11,7 @@ namespace LeaderboardCore.Models.UI.ViewControllers
     public abstract class BasicDoubleTextPanelViewController : BasicPanelViewController
     {
         protected string ExtraResourceName { get => "LeaderboardCore.Models.UI.Views.basic-panel-double-text.bsml"; }
-        protected override string customBSML { get => Utilities.GetResourceContent(Assembly.GetAssembly(typeof(BasicDoubleTextPanelViewController)), ExtraResourceName); }
+        protected override string customBSML { get => BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetAssembly(typeof(BasicDoubleTextPanelViewController)), ExtraResourceName); }
         protected override object customHost => this;
 
         #region Text

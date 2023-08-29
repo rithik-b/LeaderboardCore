@@ -146,7 +146,7 @@ namespace LeaderboardCore.UI.ViewControllers
 
         private void SwitchToIndex(int index, CustomLeaderboard? lastLeaderboard = null)
         {
-            if (index == 0 || index > orderedCustomLeaderboards.Count + 1)
+            if (index == 0 || index > orderedCustomLeaderboards.Count)
             {
                 SwitchToDefault(lastLeaderboard);
             }

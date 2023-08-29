@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using LeaderboardCore.Interfaces;
+﻿using LeaderboardCore.Interfaces;
 using UnityEngine;
 using Zenject;
 
@@ -15,9 +14,13 @@ namespace LeaderboardCore.Models
 
         private Transform ssPanelScreenTransform;
         private Vector3 ssPanelScreenPosition;
-        
+
+        private Vector3 hiddenPosition;
+
         public void OnScoreSaberActivated()
         {
+            hiddenPosition = new Vector3(-999, -999, -999);
+
             if (ssLeaderboardElementsTransform == null)
             {
                 ssLeaderboardElementsTransform = platformLeaderboardViewController.transform.Find("ScoreSaberLeaderboardElements");
@@ -30,19 +33,19 @@ namespace LeaderboardCore.Models
                 ssPanelScreenPosition = ssPanelScreenTransform.localPosition;
             }
         }
-        
+
         public void YeetSS()
         {
-            if (ssLeaderboardElementsTransform != null && ssPanelScreenTransform != null)
+            if (ssLeaderboardElementsTransform != null && ssPanelScreenTransform != null && ssLeaderboardElementsTransform.localPosition != hiddenPosition)
             {
-                ssLeaderboardElementsTransform.localPosition = new Vector3(-999, -999);
-                ssPanelScreenTransform.localPosition = new Vector3(-999, -999);
+                ssLeaderboardElementsTransform.localPosition = hiddenPosition;
+                ssPanelScreenTransform.localPosition = hiddenPosition;
             }
         }
 
         public void UnYeetSS()
         {
-            if (ssLeaderboardElementsTransform != null && ssPanelScreenTransform != null)
+            if (ssLeaderboardElementsTransform != null && ssPanelScreenTransform != null && ssLeaderboardElementsTransform.localPosition != ssLeaderboardElementsPosition)
             {
                 ssLeaderboardElementsTransform.localPosition = ssLeaderboardElementsPosition;
                 ssPanelScreenTransform.localPosition = ssPanelScreenPosition;

@@ -1,8 +1,6 @@
 ﻿using LeaderboardCore.Interfaces;
 using LeaderboardCore.Models;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
 using System.Reflection;
 
 namespace LeaderboardCore.Managers
@@ -31,7 +29,7 @@ namespace LeaderboardCore.Managers
             {
                 customLeaderboard.pluginId = Assembly.GetCallingAssembly().GetName().Name;
             }
-            
+
             if (!customLeaderboardsById.ContainsKey(customLeaderboard.LeaderboardId))
             {
                 customLeaderboardsById[customLeaderboard.LeaderboardId] = customLeaderboard;
@@ -45,8 +43,10 @@ namespace LeaderboardCore.Managers
         /// </summary>
         public void Unregister(CustomLeaderboard customLeaderboard)
         {
-            customLeaderboardsById.Remove(customLeaderboard.LeaderboardId);
-            OnLeaderboardsChanged();
+            if (customLeaderboardsById.Remove(customLeaderboard.LeaderboardId))
+            {
+                OnLeaderboardsChanged();
+            }
         }
 
         private void OnLeaderboardsChanged()

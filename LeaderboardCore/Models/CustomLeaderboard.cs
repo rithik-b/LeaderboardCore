@@ -40,7 +40,7 @@ namespace LeaderboardCore.Models
 
             if (!panelScreen.isActiveAndEnabled)
             {
-                SharedCoroutineStarter.Instance.StartCoroutine(WaitForScreen(panelScreen, leaderboardPosition,
+                SharedCoroutineStarter.instance.StartCoroutine(WaitForScreen(panelScreen, leaderboardPosition,
                     platformLeaderboardViewController));
                 return;
             }

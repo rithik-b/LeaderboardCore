@@ -6,7 +6,7 @@ using System.Reflection;
 namespace LeaderboardCore.Managers
 {
     /// <summary>
-    /// Class for the Leaderboard Manager. Use it to register and unregister yourself. Requires Zenject to recieve the instance (installed in menu scene).
+    /// Class for the Leaderboard Manager. Use it to register and unregister yourself. Requires Zenject to receive the instance (installed in menu scene).
     /// </summary>
     public class CustomLeaderboardManager
     {

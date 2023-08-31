@@ -32,7 +32,6 @@ namespace LeaderboardCore.UI.ViewControllers
         private Vector3 containerPosition;
         private Vector3 hiddenPosition;
 
-        private bool leaderboardLoaded;
         private IPreviewBeatmapLevel? selectedLevel;
 
         private readonly List<CustomLeaderboard> orderedCustomLeaderboards = new List<CustomLeaderboard>();
@@ -80,14 +79,15 @@ namespace LeaderboardCore.UI.ViewControllers
 
         public void OnEnable()
         {
-            OnLeaderboardLoaded();
-
             if (containerTransform == null)
             {
                 containerTransform = platformLeaderboardViewController.transform.Find("Container");
                 containerPosition = containerTransform.localPosition;
                 hiddenPosition = new Vector3(-999, -999, -999);
-                leaderboardLoaded = true;
+            }
+
+            if (!isActivated)
+            {
                 OnLeaderboardLoaded();
             }
         }
@@ -106,7 +106,7 @@ namespace LeaderboardCore.UI.ViewControllers
 
         public void OnLeaderboardLoaded(bool loaded = true)
         {
-            if (!leaderboardLoaded)
+            if (!isActiveAndEnabled && !isActivated)
                 return;
 
             if (!(selectedLevel is CustomPreviewBeatmapLevel))
@@ -136,12 +136,16 @@ namespace LeaderboardCore.UI.ViewControllers
 
         private void SwitchToDefault(CustomLeaderboard? lastLeaderboard = null)
         {
-            lastLeaderboard ??= customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard ?? "", out var outLastLeaderboard)
-                ? outLastLeaderboard
-                : null;
-            lastLeaderboard?.Hide(customPanelFloatingScreen);
+            if (containerTransform != null && containerTransform.localPosition == hiddenPosition)
+            {
+                lastLeaderboard ??= customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard ?? "", out var outLastLeaderboard)
+                    ? outLastLeaderboard
+                    : null;
+                lastLeaderboard?.Hide(customPanelFloatingScreen);
+                UnYeetDefault();
+            }
+
             currentIndex = 0;
-            UnYeetDefault();
         }
 
         private void SwitchToIndex(int index, CustomLeaderboard? lastLeaderboard = null)
@@ -265,7 +269,7 @@ namespace LeaderboardCore.UI.ViewControllers
                 this.customLeaderboardsById[customLeaderboard.Key] = customLeaderboard.Value;
             }
 
-            if (!leaderboardLoaded)
+            if (!isActiveAndEnabled && !isActivated)
                 return;
 
             // We only want to display the default leaderboard if there's no other custom leaderboards

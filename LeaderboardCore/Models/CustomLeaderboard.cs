@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using BeatSaberMarkupLanguage.FloatingScreen;
 using HMUI;
 using LeaderboardCore.Utilities;
@@ -21,28 +20,31 @@ namespace LeaderboardCore.Models
         /// The ViewController for the leaderboard itself.
         /// </summary>
         protected abstract ViewController leaderboardViewController { get; }
-        
+
         /// <summary>
         /// The ID for the leaderboard.
         /// Must be a unique string if the mod has multiple leaderboards.
         /// </summary>
         protected virtual string leaderboardId { get; } = "";
-        
+
         internal string pluginId;
-        
+
         internal string LeaderboardId => $"{pluginId}{leaderboardId}";
 
         internal void Show(FloatingScreen panelScreen, Vector3 leaderboardPosition, PlatformLeaderboardViewController platformLeaderboardViewController)
         {
-            panelScreen.gameObject.SetActive(true);
-            
+            if (!panelScreen.gameObject.activeSelf)
+            {
+                panelScreen.gameObject.SetActive(true);
+            }
+
             if (!panelScreen.isActiveAndEnabled)
             {
-                SharedCoroutineStarter.Instance.StartCoroutine(WaitForScreen(panelScreen, leaderboardPosition,
+                SharedCoroutineStarter.instance.StartCoroutine(WaitForScreen(panelScreen, leaderboardPosition,
                     platformLeaderboardViewController));
                 return;
             }
-            
+
             if (panelViewController != null)
             {
                 panelScreen.SetRootViewController(panelViewController, ViewController.AnimationType.None);
@@ -69,7 +71,7 @@ namespace LeaderboardCore.Models
                 leaderboardViewController.transform.SetParent(platformLeaderboardViewController.transform);
             }
         }
-        
+
         private IEnumerator WaitForScreen(FloatingScreen panelScreen, Vector3 leaderboardPosition,
             PlatformLeaderboardViewController platformLeaderboardViewController)
         {
@@ -90,11 +92,11 @@ namespace LeaderboardCore.Models
                 }
                 else
                 {
-                    panelViewController.gameObject.SetActive(false);
+                    panelViewController.DeactivateGameObject();
                 }
             }
 
-            if (leaderboardViewController != null && leaderboardViewController.isActivated)
+            if (leaderboardViewController != null)
             {
                 leaderboardViewController.__Deactivate(false, true, false);
             }

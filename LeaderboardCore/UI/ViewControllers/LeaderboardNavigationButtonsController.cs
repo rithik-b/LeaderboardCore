@@ -6,7 +6,6 @@ using LeaderboardCore.Interfaces;
 using LeaderboardCore.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using LeaderboardCore.Configuration;
 using UnityEngine;
 using Zenject;
@@ -17,32 +16,32 @@ namespace LeaderboardCore.UI.ViewControllers
     [ViewDefinition("LeaderboardCore.UI.Views.LeaderboardNavigationButtons.bsml")]
     internal class LeaderboardNavigationButtonsController : BSMLAutomaticViewController, IInitializable, IDisposable, INotifyLeaderboardSet, INotifyLeaderboardLoad, INotifyCustomLeaderboardsChange
     {
-        [Inject] 
+        [Inject]
         private readonly PlatformLeaderboardViewController platformLeaderboardViewController = null!;
-        
+
         [Inject]
         private readonly PluginConfig pluginConfig = null!;
 
-        [InjectOptional] 
+        [InjectOptional]
         private readonly ScoreSaberCustomLeaderboard? scoreSaberCustomLeaderboard = null!;
-        
+
         private FloatingScreen? buttonsFloatingScreen;
         private FloatingScreen? customPanelFloatingScreen;
 
         private Transform? containerTransform;
         private Vector3 containerPosition;
-        
-        private bool leaderboardLoaded;
+        private Vector3 hiddenPosition;
+
         private IPreviewBeatmapLevel? selectedLevel;
 
         private readonly List<CustomLeaderboard> orderedCustomLeaderboards = new List<CustomLeaderboard>();
         private readonly Dictionary<string, CustomLeaderboard> customLeaderboardsById = new Dictionary<string, CustomLeaderboard>();
         private int currentIndex;
-        
+
         public void Initialize()
         {
             buttonsFloatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(120f, 25f), false, Vector3.zero, Quaternion.identity);
-            
+
             var buttonsFloatingScreenTransform = buttonsFloatingScreen.transform;
             buttonsFloatingScreenTransform.SetParent(platformLeaderboardViewController.transform);
             buttonsFloatingScreenTransform.localPosition = new Vector3(3f, 50f);
@@ -64,7 +63,7 @@ namespace LeaderboardCore.UI.ViewControllers
             customFloatingScreenGO.SetActive(false);
             customFloatingScreenGO.SetActive(true);
             customFloatingScreenGO.name = "CustomLeaderboardPanel";
-            
+
             platformLeaderboardViewController.didActivateEvent += OnLeaderboardActivated;
         }
 
@@ -74,29 +73,31 @@ namespace LeaderboardCore.UI.ViewControllers
             {
                 Destroy(buttonsFloatingScreen.gameObject);
             }
-            
+
             platformLeaderboardViewController.didActivateEvent -= OnLeaderboardActivated;
         }
 
         public void OnEnable()
         {
-            OnLeaderboardLoaded();
-            
             if (containerTransform == null)
             {
                 containerTransform = platformLeaderboardViewController.transform.Find("Container");
                 containerPosition = containerTransform.localPosition;
-                leaderboardLoaded = true;
+                hiddenPosition = new Vector3(-999, -999, -999);
+            }
+
+            if (!isActivated)
+            {
                 OnLeaderboardLoaded();
             }
         }
-        
+
         private void OnLeaderboardActivated(bool firstactivation, bool addedtohierarchy, bool screensystemenabling)
         {
             platformLeaderboardViewController.didActivateEvent -= OnLeaderboardActivated;
             buttonsFloatingScreen!.SetRootViewController(this, AnimationType.None);
         }
-        
+
         public void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
         {
             selectedLevel = difficultyBeatmap.level;
@@ -105,7 +106,7 @@ namespace LeaderboardCore.UI.ViewControllers
 
         public void OnLeaderboardLoaded(bool loaded = true)
         {
-            if (!leaderboardLoaded)
+            if (!isActiveAndEnabled && !isActivated)
                 return;
 
             if (!(selectedLevel is CustomPreviewBeatmapLevel))
@@ -126,7 +127,7 @@ namespace LeaderboardCore.UI.ViewControllers
                 else if (currentIndex == 0 && !ShowDefaultLeaderboard)
                 {
                     RightButtonClick();
-                }   
+                }
             }
 
             NotifyPropertyChanged(nameof(LeftButtonActive));
@@ -135,17 +136,21 @@ namespace LeaderboardCore.UI.ViewControllers
 
         private void SwitchToDefault(CustomLeaderboard? lastLeaderboard = null)
         {
-            lastLeaderboard ??= customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard ?? "", out var outLastLeaderboard)
-                ? outLastLeaderboard
-                : null;
-            lastLeaderboard?.Hide(customPanelFloatingScreen);
+            if (containerTransform != null && containerTransform.localPosition == hiddenPosition)
+            {
+                lastLeaderboard ??= customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard ?? "", out var outLastLeaderboard)
+                    ? outLastLeaderboard
+                    : null;
+                lastLeaderboard?.Hide(customPanelFloatingScreen);
+                UnYeetDefault();
+            }
+
             currentIndex = 0;
-            UnYeetDefault();
         }
 
         private void SwitchToIndex(int index, CustomLeaderboard? lastLeaderboard = null)
         {
-            if (index == 0 || index > orderedCustomLeaderboards.Count + 1)
+            if (index == 0 || index > orderedCustomLeaderboards.Count)
             {
                 SwitchToDefault(lastLeaderboard);
             }
@@ -155,7 +160,7 @@ namespace LeaderboardCore.UI.ViewControllers
                     ? outLastLeaderboard
                     : null;
                 lastLeaderboard?.Hide(customPanelFloatingScreen);
-                
+
                 currentIndex = index;
                 var currentLeaderboard = orderedCustomLeaderboards[currentIndex - 1];
                 pluginConfig.LastLeaderboard = currentLeaderboard.LeaderboardId;
@@ -170,22 +175,22 @@ namespace LeaderboardCore.UI.ViewControllers
                 var lastLeaderboardIndex = orderedCustomLeaderboards.IndexOf(lastLeaderboard);
                 lastLeaderboard.Show(customPanelFloatingScreen, containerPosition, platformLeaderboardViewController);
                 currentIndex = lastLeaderboardIndex + 1;
-                YeetDefault();             
+                YeetDefault();
             }
         }
 
         private void YeetDefault()
         {
-            if (containerTransform != null)
+            if (containerTransform != null && containerTransform.localPosition != hiddenPosition)
             {
-                containerTransform.localPosition = new Vector3(-999, -999);
+                containerTransform.localPosition = hiddenPosition;
             }
             scoreSaberCustomLeaderboard?.YeetSS();
         }
 
         private void UnYeetDefault()
         {
-            if (containerTransform != null)
+            if (containerTransform != null && containerTransform.localPosition != containerPosition)
             {
                 containerTransform.localPosition = containerPosition;
             }
@@ -199,12 +204,12 @@ namespace LeaderboardCore.UI.ViewControllers
             {
                 return;
             }
-            
+
             if (customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard, out var outLastLeaderboard))
             {
                 outLastLeaderboard.Hide(customPanelFloatingScreen);
             }
-            
+
             currentIndex--;
 
             if (currentIndex == 0)
@@ -251,20 +256,20 @@ namespace LeaderboardCore.UI.ViewControllers
 
         public void OnLeaderboardsChanged(IEnumerable<CustomLeaderboard> orderedCustomLeaderboards, Dictionary<string, CustomLeaderboard> customLeaderboardsById)
         {
-            this.orderedCustomLeaderboards.Clear(); 
+            this.orderedCustomLeaderboards.Clear();
             this.orderedCustomLeaderboards.AddRange(orderedCustomLeaderboards);
-            
+
             // I hate how this library is so scuffed and really hope scoresaber uses it instead of having to do this
             // So this piece of scuffed code takes the last leaderboard if it was part of the current list and gives it for switching out
             var lastLeaderboard = this.customLeaderboardsById.TryGetValue(pluginConfig.LastLeaderboard ?? "", out var outLastLeaderboard) ? outLastLeaderboard : null;
-            
+
             this.customLeaderboardsById.Clear();
             foreach (var customLeaderboard in customLeaderboardsById)
             {
                 this.customLeaderboardsById[customLeaderboard.Key] = customLeaderboard.Value;
             }
-            
-            if (!leaderboardLoaded)
+
+            if (!isActiveAndEnabled && !isActivated)
                 return;
 
             // We only want to display the default leaderboard if there's no other custom leaderboards
@@ -294,7 +299,7 @@ namespace LeaderboardCore.UI.ViewControllers
 
         [UIValue("right-button-active")]
         private bool RightButtonActive => currentIndex < orderedCustomLeaderboards.Count && selectedLevel is CustomPreviewBeatmapLevel;
-        
+
         private bool ShowDefaultLeaderboard => scoreSaberCustomLeaderboard != null || !(selectedLevel is CustomPreviewBeatmapLevel) || orderedCustomLeaderboards.Count == 0;
     }
 }

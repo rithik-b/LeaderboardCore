@@ -74,6 +74,12 @@
             Must be a unique string if the mod has multiple leaderboards.
             </summary>
         </member>
+        <member name="M:LeaderboardCore.Models.CustomLeaderboard.ShowForLevel(IPreviewBeatmapLevel)">
+            <summary>
+            Should your leaderboard show for a specific level.
+            Default is to show for all custom maps.
+            </summary>
+        </member>
         <member name="T:LeaderboardCore.Models.UI.ViewControllers.BasicDoubleTextPanelViewController">
             <summary>
             Absract class for a <see cref="T:LeaderboardCore.Models.UI.ViewControllers.BasicPanelViewController"/> with both a top text and a bottom text on the right side (the same as what ScoreSaber has).

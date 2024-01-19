@@ -32,7 +32,7 @@ namespace LeaderboardCore.Models
         /// Default is to show for all custom maps.
         /// </summary>
         public virtual bool ShowForLevel(IPreviewBeatmapLevel selectedLevel) {
-            return !(selectedLevel is CustomPreviewBeatmapLevel);
+            return selectedLevel is CustomPreviewBeatmapLevel;
         }
 
         internal string pluginId;

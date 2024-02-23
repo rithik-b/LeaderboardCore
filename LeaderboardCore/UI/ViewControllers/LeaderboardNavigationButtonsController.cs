@@ -269,7 +269,7 @@ namespace LeaderboardCore.UI.ViewControllers
                 this.customLeaderboardsById[customLeaderboard.Key] = customLeaderboard.Value;
             }
 
-            if (!isActiveAndEnabled && !isActivated)
+            if (this == null || (!isActiveAndEnabled && !isActivated))
                 return;
 
             // We only want to display the default leaderboard if there's no other custom leaderboards

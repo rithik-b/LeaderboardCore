@@ -27,6 +27,14 @@ namespace LeaderboardCore.Models
         /// </summary>
         protected virtual string leaderboardId { get; } = "";
 
+        /// <summary>
+        /// Should your leaderboard show for a specific level.
+        /// Default is to show for all custom maps.
+        /// </summary>
+        public virtual bool ShowForLevel(IPreviewBeatmapLevel selectedLevel) {
+            return selectedLevel is CustomPreviewBeatmapLevel;
+        }
+
         internal string pluginId;
 
         internal string LeaderboardId => $"{pluginId}{leaderboardId}";

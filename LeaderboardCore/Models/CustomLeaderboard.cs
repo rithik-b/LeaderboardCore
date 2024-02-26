@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using BeatSaberMarkupLanguage.FloatingScreen;
 using HMUI;
+using LeaderboardCore.Utilities;
 using UnityEngine;
 
 namespace LeaderboardCore.Models
@@ -25,6 +26,14 @@ namespace LeaderboardCore.Models
         /// Must be a unique string if the mod has multiple leaderboards.
         /// </summary>
         protected virtual string leaderboardId { get; } = "";
+
+        /// <summary>
+        /// Should your leaderboard show for a specific level.
+        /// Default is to show for all custom maps.
+        /// </summary>
+        public virtual bool ShowForLevel(IPreviewBeatmapLevel selectedLevel) {
+            return selectedLevel is CustomPreviewBeatmapLevel;
+        }
 
         internal string pluginId;
 

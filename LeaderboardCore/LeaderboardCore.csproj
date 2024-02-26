@@ -118,5 +118,6 @@
 	<ItemGroup>
 	  <Folder Include="UI\ViewControllers\" />
 	  <Folder Include="UI\Views\" />
+	  <Folder Include="Utilities\" />
 	</ItemGroup>
 </Project>

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using LeaderboardCore.Configuration;
 using UnityEngine;
 using Zenject;
+using System.Linq;
 
 namespace LeaderboardCore.UI.ViewControllers
 {
@@ -34,6 +35,7 @@ namespace LeaderboardCore.UI.ViewControllers
 
         private IPreviewBeatmapLevel? selectedLevel;
 
+        private readonly List<CustomLeaderboard> orderedCustomLeaderboardsCache = new List<CustomLeaderboard>();
         private readonly List<CustomLeaderboard> orderedCustomLeaderboards = new List<CustomLeaderboard>();
         private readonly Dictionary<string, CustomLeaderboard> customLeaderboardsById = new Dictionary<string, CustomLeaderboard>();
         private int currentIndex;
@@ -109,25 +111,29 @@ namespace LeaderboardCore.UI.ViewControllers
             if (!isActiveAndEnabled && !isActivated)
                 return;
 
-            if (!(selectedLevel is CustomPreviewBeatmapLevel))
+            if (selectedLevel != null) {
+                this.orderedCustomLeaderboards.Clear();
+                this.orderedCustomLeaderboards.AddRange(
+                    this.orderedCustomLeaderboardsCache
+                    .Where(ld => ld.ShowForLevel(selectedLevel))
+                    .ToList());
+            }
+
+            // If not loaded or leaderboard removed
+            if (pluginConfig.LastLeaderboard != null && 
+                ((!customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard) && currentIndex != 0) ||
+                customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard) && 
+                !customLeaderboardsById[pluginConfig.LastLeaderboard ?? ""].ShowForLevel(selectedLevel)))
             {
                 SwitchToDefault();
             }
-            else
+            else if (customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard ?? "") && currentIndex == 0)
             {
-                // If not loaded or leaderboard removed
-                if (pluginConfig.LastLeaderboard != null && !customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard) && currentIndex != 0)
-                {
-                    SwitchToDefault();
-                }
-                else if (customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard ?? "") && currentIndex == 0)
-                {
-                    SwitchToLastLeaderboard();
-                }
-                else if (currentIndex == 0 && !ShowDefaultLeaderboard)
-                {
-                    RightButtonClick();
-                }
+                SwitchToLastLeaderboard();
+            }
+            else if (currentIndex == 0 && !ShowDefaultLeaderboard)
+            {
+                RightButtonClick();
             }
 
             NotifyPropertyChanged(nameof(LeftButtonActive));
@@ -256,8 +262,18 @@ namespace LeaderboardCore.UI.ViewControllers
 
         public void OnLeaderboardsChanged(IEnumerable<CustomLeaderboard> orderedCustomLeaderboards, Dictionary<string, CustomLeaderboard> customLeaderboardsById)
         {
+            this.orderedCustomLeaderboardsCache.Clear();
+            this.orderedCustomLeaderboardsCache.AddRange(orderedCustomLeaderboards);
+
             this.orderedCustomLeaderboards.Clear();
-            this.orderedCustomLeaderboards.AddRange(orderedCustomLeaderboards);
+            if (selectedLevel != null) {
+                this.orderedCustomLeaderboards.AddRange(
+                    this.orderedCustomLeaderboardsCache
+                    .Where(ld => ld.ShowForLevel(selectedLevel))
+                    .ToList());
+            } else {
+                this.orderedCustomLeaderboards.AddRange(orderedCustomLeaderboards);
+            }
 
             // I hate how this library is so scuffed and really hope scoresaber uses it instead of having to do this
             // So this piece of scuffed code takes the last leaderboard if it was part of the current list and gives it for switching out
@@ -269,11 +285,11 @@ namespace LeaderboardCore.UI.ViewControllers
                 this.customLeaderboardsById[customLeaderboard.Key] = customLeaderboard.Value;
             }
 
-            if (!isActiveAndEnabled && !isActivated)
+            if (this == null || (!isActiveAndEnabled && !isActivated))
                 return;
 
             // We only want to display the default leaderboard if there's no other custom leaderboards
-            if (!(selectedLevel is CustomPreviewBeatmapLevel) || this.orderedCustomLeaderboards.Count == 0)
+            if (this.orderedCustomLeaderboards.Count == 0)
             {
                 SwitchToDefault(lastLeaderboard);
             }
@@ -281,9 +297,15 @@ namespace LeaderboardCore.UI.ViewControllers
             {
                 SwitchToIndex(1, lastLeaderboard);
             }
-            else if (customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard ?? "") && currentIndex == 0)
+            else if (
+                customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard ?? "") && 
+                currentIndex == 0)
             {
-                SwitchToLastLeaderboard();
+                if (selectedLevel != null && customLeaderboardsById[pluginConfig.LastLeaderboard ?? ""].ShowForLevel(selectedLevel)) {
+                    SwitchToLastLeaderboard();
+                } else {
+                    SwitchToDefault(lastLeaderboard);
+                }
             }
             else if (currentIndex == 0 && !ShowDefaultLeaderboard)
             {
@@ -295,11 +317,14 @@ namespace LeaderboardCore.UI.ViewControllers
         }
 
         [UIValue("left-button-active")]
-        private bool LeftButtonActive => currentIndex > 0 && (ShowDefaultLeaderboard || currentIndex > 1 ) && selectedLevel is CustomPreviewBeatmapLevel;
+        private bool LeftButtonActive => currentIndex > 0 && (ShowDefaultLeaderboard || currentIndex > 1);
 
         [UIValue("right-button-active")]
-        private bool RightButtonActive => currentIndex < orderedCustomLeaderboards.Count && selectedLevel is CustomPreviewBeatmapLevel;
+        private bool RightButtonActive => currentIndex < orderedCustomLeaderboards.Count;
 
-        private bool ShowDefaultLeaderboard => scoreSaberCustomLeaderboard != null || !(selectedLevel is CustomPreviewBeatmapLevel) || orderedCustomLeaderboards.Count == 0;
+        private bool ShowDefaultLeaderboard => 
+            scoreSaberCustomLeaderboard != null || 
+            !(selectedLevel is CustomPreviewBeatmapLevel) || 
+            orderedCustomLeaderboards.Count == 0;
     }
 }

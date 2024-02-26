@@ -37,7 +37,7 @@ namespace LeaderboardCore.Models.UI.ViewControllers
 
         public override string Content
         {
-            get => Utilities.GetResourceContent(Assembly.GetAssembly(typeof(BasicLeaderboardViewController)), ResourceName);
+            get => BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetAssembly(typeof(BasicLeaderboardViewController)), ResourceName);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -19,7 +19,7 @@ namespace LeaderboardCore.Models.UI.ViewControllers
 
         public override string Content
         {
-            get => Utilities.GetResourceContent(Assembly.GetAssembly(typeof(BasicPanelViewController)), ResourceName);
+            get => BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetAssembly(typeof(BasicPanelViewController)), ResourceName);
         }
 
         #region events
@@ -149,7 +149,7 @@ namespace LeaderboardCore.Models.UI.ViewControllers
             _background = outer.background as ImageView;
 
             // show some actual color
-            _background.material = Utilities.ImageResources.NoGlowMat;
+            _background.material = BeatSaberMarkupLanguage.Utilities.ImageResources.NoGlowMat;
             _background.color = _backgroundColor;
 
             // setup gradient

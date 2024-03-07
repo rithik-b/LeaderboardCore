@@ -7,8 +7,8 @@
     {
         /// <summary>
         /// Called when a map has been selected on the leaderboard.
-        /// <param name="difficultyBeatmap"></param>
+        /// <param name="beatmapKey"></param>
         /// </summary>
-        public void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap);
+        public void OnLeaderboardSet(BeatmapKey beatmapKey);
     }
 }

@@ -10,6 +10,7 @@ using LeaderboardCore.Configuration;
 using UnityEngine;
 using Zenject;
 using System.Linq;
+using LeaderboardCore.Utilities;
 
 namespace LeaderboardCore.UI.ViewControllers
 {
@@ -33,7 +34,7 @@ namespace LeaderboardCore.UI.ViewControllers
         private Vector3 containerPosition;
         private Vector3 hiddenPosition;
 
-        private IPreviewBeatmapLevel? selectedLevel;
+        private BeatmapKey? selectedLevelKey;
 
         private readonly List<CustomLeaderboard> orderedCustomLeaderboardsCache = new List<CustomLeaderboard>();
         private readonly List<CustomLeaderboard> orderedCustomLeaderboards = new List<CustomLeaderboard>();
@@ -100,9 +101,9 @@ namespace LeaderboardCore.UI.ViewControllers
             buttonsFloatingScreen!.SetRootViewController(this, AnimationType.None);
         }
 
-        public void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
+        public void OnLeaderboardSet(BeatmapKey selectedKey)
         {
-            selectedLevel = difficultyBeatmap.level;
+            selectedLevelKey = selectedKey;
             OnLeaderboardLoaded();
         }
 
@@ -111,11 +112,11 @@ namespace LeaderboardCore.UI.ViewControllers
             if (!isActiveAndEnabled && !isActivated)
                 return;
 
-            if (selectedLevel != null) {
+            if (selectedLevelKey != null) {
                 this.orderedCustomLeaderboards.Clear();
                 this.orderedCustomLeaderboards.AddRange(
                     this.orderedCustomLeaderboardsCache
-                    .Where(ld => ld.ShowForLevel(selectedLevel))
+                    .Where(ld => ld.ShowForLevel(selectedLevelKey))
                     .ToList());
             }
 
@@ -123,7 +124,7 @@ namespace LeaderboardCore.UI.ViewControllers
             if (pluginConfig.LastLeaderboard != null && 
                 ((!customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard) && currentIndex != 0) ||
                 customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard) && 
-                !customLeaderboardsById[pluginConfig.LastLeaderboard ?? ""].ShowForLevel(selectedLevel)))
+                !customLeaderboardsById[pluginConfig.LastLeaderboard ?? ""].ShowForLevel(selectedLevelKey)))
             {
                 SwitchToDefault();
             }
@@ -266,10 +267,10 @@ namespace LeaderboardCore.UI.ViewControllers
             this.orderedCustomLeaderboardsCache.AddRange(orderedCustomLeaderboards);
 
             this.orderedCustomLeaderboards.Clear();
-            if (selectedLevel != null) {
+            if (selectedLevelKey != null) {
                 this.orderedCustomLeaderboards.AddRange(
                     this.orderedCustomLeaderboardsCache
-                    .Where(ld => ld.ShowForLevel(selectedLevel))
+                    .Where(ld => ld.ShowForLevel(selectedLevelKey))
                     .ToList());
             } else {
                 this.orderedCustomLeaderboards.AddRange(orderedCustomLeaderboards);
@@ -301,7 +302,7 @@ namespace LeaderboardCore.UI.ViewControllers
                 customLeaderboardsById.ContainsKey(pluginConfig.LastLeaderboard ?? "") && 
                 currentIndex == 0)
             {
-                if (selectedLevel != null && customLeaderboardsById[pluginConfig.LastLeaderboard ?? ""].ShowForLevel(selectedLevel)) {
+                if (selectedLevelKey != null && customLeaderboardsById[pluginConfig.LastLeaderboard ?? ""].ShowForLevel(selectedLevelKey)) {
                     SwitchToLastLeaderboard();
                 } else {
                     SwitchToDefault(lastLeaderboard);
@@ -324,7 +325,7 @@ namespace LeaderboardCore.UI.ViewControllers
 
         private bool ShowDefaultLeaderboard => 
             scoreSaberCustomLeaderboard != null || 
-            !(selectedLevel is CustomPreviewBeatmapLevel) || 
+            !(selectedLevelKey?.levelId.Contains(Constants.CustomLevelPrefix) ?? false) || 
             orderedCustomLeaderboards.Count == 0;
     }
 }

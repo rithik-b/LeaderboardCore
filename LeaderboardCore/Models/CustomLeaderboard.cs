@@ -31,8 +31,8 @@ namespace LeaderboardCore.Models
         /// Should your leaderboard show for a specific level.
         /// Default is to show for all custom maps.
         /// </summary>
-        public virtual bool ShowForLevel(IPreviewBeatmapLevel selectedLevel) {
-            return selectedLevel is CustomPreviewBeatmapLevel;
+        public virtual bool ShowForLevel(BeatmapKey? beatmapKey) {
+            return beatmapKey?.levelId.Contains(Constants.CustomLevelPrefix) ?? false;
         }
 
         internal string pluginId;

@@ -20,10 +20,10 @@
             Implement this interface to be notified when a map is selected.
             </summary>
         </member>
-        <member name="M:LeaderboardCore.Interfaces.INotifyLeaderboardSet.OnLeaderboardSet(IDifficultyBeatmap)">
+        <member name="M:LeaderboardCore.Interfaces.INotifyLeaderboardSet.OnLeaderboardSet(BeatmapKey)">
             <summary>
             Called when a map has been selected on the leaderboard.
-            <param name="difficultyBeatmap"></param>
+            <param name="beatmapKey"></param>
             </summary>
         </member>
         <member name="T:LeaderboardCore.Interfaces.INotifyScoreUpload">
@@ -38,7 +38,7 @@
         </member>
         <member name="T:LeaderboardCore.Managers.CustomLeaderboardManager">
             <summary>
-            Class for the Leaderboard Manager. Use it to register and unregister yourself. Requires Zenject to recieve the instance (installed in menu scene).
+            Class for the Leaderboard Manager. Use it to register and unregister yourself. Requires Zenject to receive the instance (installed in menu scene).
             </summary>
         </member>
         <member name="M:LeaderboardCore.Managers.CustomLeaderboardManager.Register(LeaderboardCore.Models.CustomLeaderboard)">
@@ -74,7 +74,7 @@
             Must be a unique string if the mod has multiple leaderboards.
             </summary>
         </member>
-        <member name="M:LeaderboardCore.Models.CustomLeaderboard.ShowForLevel(IPreviewBeatmapLevel)">
+        <member name="M:LeaderboardCore.Models.CustomLeaderboard.ShowForLevel(System.Nullable{BeatmapKey})">
             <summary>
             Should your leaderboard show for a specific level.
             Default is to show for all custom maps.

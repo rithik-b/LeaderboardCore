@@ -22,7 +22,7 @@ namespace LeaderboardCore.Managers
 			_levelSelectionNavigationController = levelSelectionNavigationController;
 		}
 
-		private void ShowLeaderboard(IDifficultyBeatmap difficultyBeatmap)
+		private void ShowLeaderboard(BeatmapLevel difficultyBeatmap)
 		{
 			if (!_multiplayerLobbyController.lobbyActivated)
 				return;
@@ -33,7 +33,7 @@ namespace LeaderboardCore.Managers
 				return;
 			}
 
-			_platformLeaderboardViewController.SetData(_levelSelectionNavigationController.selectedDifficultyBeatmap);
+			_platformLeaderboardViewController.SetData(_levelSelectionNavigationController.beatmapKey);
 
 			_mainFlowCoordinator.YoungestChildFlowCoordinatorOrSelf().InvokeMethod<object, FlowCoordinator>("SetRightScreenViewController", _platformLeaderboardViewController, ViewController.AnimationType.In);
 			_serverPlayerListViewController.DeactivateGameObject();
@@ -48,16 +48,16 @@ namespace LeaderboardCore.Managers
 		{
 			if (contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady)
 			{
-				ShowLeaderboard(levelSelectionNavigationController.selectedDifficultyBeatmap);
+				ShowLeaderboard(levelSelectionNavigationController.beatmapLevel);
 				return;
 			}
 
 			ShowLeaderboard(null);
 		}
 
-		private void LevelSelectionNavigationControllerOndidChangeDifficultyBeatmapEvent(LevelSelectionNavigationController levelSelectionNavigationController, IDifficultyBeatmap difficultyBeatmap)
+		private void LevelSelectionNavigationControllerOndidChangeDifficultyBeatmapEvent(LevelSelectionNavigationController levelSelectionNavigationController)
 		{
-			ShowLeaderboard(difficultyBeatmap);
+			ShowLeaderboard(levelSelectionNavigationController.beatmapLevel);
 		}
 
 		public void Initialize()

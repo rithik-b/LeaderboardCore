@@ -3,7 +3,7 @@ using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.ViewControllers;
 using HMUI;
 using IPA.Utilities;
-using Polyglot;
+using BGLib.Polyglot;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
